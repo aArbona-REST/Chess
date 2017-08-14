@@ -1,0 +1,8 @@
+#include "USERINPUT.h"
+USERINPUT::USERINPUT()
+{
+}
+
+USERINPUT::~USERINPUT()
+{
+}

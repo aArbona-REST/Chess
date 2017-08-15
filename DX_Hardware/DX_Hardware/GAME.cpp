@@ -19,7 +19,7 @@ void GAME::Run(XTime &T)
 	T.Signal();
 	gpu->Set();
 	gpu->Clear();
-	gpu->CameraUpdate();
+	gpu->CameraUpdate();//TODO: This function is bugged. The camera does not move.
 
 	switch (presentteamturn)
 	{

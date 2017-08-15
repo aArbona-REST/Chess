@@ -163,7 +163,7 @@ void GPU::Render(XTime &Time)
 
 	PositionUpdate(teamone, piececount);
 	Render(teamone, piececount);
-	
+
 	PositionUpdate(teamtwo, piececount);
 	Render(teamtwo, piececount);
 
@@ -204,6 +204,7 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
 		}
 		input.buttonbuffer[VK_RETURN] = true;
 	}
+
 #pragma region left
 	if (!input.buttons[VK_LEFT])
 		input.buttonbuffer[VK_LEFT] = false;
@@ -221,18 +222,25 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
 		}
 		else
 		{
-			selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
-			selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
-			map[row][depth].positionstatus = 0;
-			map[row][depth].left->positionstatus = presentteamturn;
-			unsigned int objectindex = map[row][depth].occupieindex;
-			map[row][depth].occupieindex = -1;
-			map[row][depth].left->occupieindex = objectindex;
-			objects[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
-			objects[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
-			pieceselected = !pieceselected;
-			selectedobject = -1;
-			turnended = true;
+			if (map[row][depth].left->positionstatus == 0)
+			{
+				selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
+				selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
+				map[row][depth].positionstatus = 0;
+				map[row][depth].left->positionstatus = presentteamturn;
+				unsigned int objectindex = map[row][depth].occupieindex;
+				map[row][depth].occupieindex = -1;
+				map[row][depth].left->occupieindex = objectindex;
+				objects[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
+				objects[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
+				pieceselected = !pieceselected;
+				selectedobject = -1;
+				turnended = true;
+			}
+			else
+			{
+				//TODO:sound code 
+			}
 		}
 		input.buttonbuffer[VK_LEFT] = true;
 	}
@@ -256,24 +264,32 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
 		}
 		else
 		{
-			selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
-			selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
-			map[row][depth].positionstatus = 0;
-			map[row][depth].right->positionstatus = presentteamturn;
-			unsigned int objectindex = map[row][depth].occupieindex;
-			map[row][depth].occupieindex = -1;
-			map[row][depth].right->occupieindex = objectindex;
-			objects[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
-			objects[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
-			pieceselected = !pieceselected;
-			selectedobject = -1;
-			turnended = true;
+			if (map[row][depth].right->positionstatus == 0)
+			{
+
+				selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
+				selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
+				map[row][depth].positionstatus = 0;
+				map[row][depth].right->positionstatus = presentteamturn;
+				unsigned int objectindex = map[row][depth].occupieindex;
+				map[row][depth].occupieindex = -1;
+				map[row][depth].right->occupieindex = objectindex;
+				objects[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
+				objects[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
+				pieceselected = !pieceselected;
+				selectedobject = -1;
+				turnended = true;
+			}
+			else
+			{
+				//TODO: sound code
+			}
 		}
 		input.buttonbuffer[VK_RIGHT] = true;
 	}
 #pragma endregion
 
-#pragma region up
+#pragma region front
 	if (!input.buttons[VK_UP])
 		input.buttonbuffer[VK_UP] = false;
 	if (input.buttonbuffer[VK_UP] == false && input.buttons[VK_UP])
@@ -290,8 +306,11 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
 		}
 		else
 		{
-			if (map[row][depth].front != nullptr)
+			if (map[row][depth].front != nullptr && map[row][depth].front->positionstatus == 0)
 			{
+
+
+
 				selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
 				selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
 				map[row][depth].positionstatus = 0;
@@ -305,12 +324,18 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
 				selectedobject = -1;
 				turnended = true;
 			}
+			else
+			{
+				//TODO: sound code
+				//this is where code would go that plays a negative sound for trying to movepiece to tile where a piece of the same team already is
+				//two pieces may not be on the same tile
+			}
 		}
 		input.buttonbuffer[VK_UP] = true;
 	}
 #pragma endregion
 
-#pragma region down
+#pragma region back
 	if (!input.buttons[VK_DOWN])
 		input.buttonbuffer[VK_DOWN] = false;
 	if (input.buttonbuffer[VK_DOWN] == false && input.buttons[VK_DOWN])
@@ -327,7 +352,7 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
 		}
 		else
 		{
-			if (map[row][depth].back != nullptr)
+			if (map[row][depth].back != nullptr && map[row][depth].back->positionstatus == 0)
 			{
 				selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
 				selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
@@ -341,6 +366,10 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
 				pieceselected = !pieceselected;
 				selectedobject = -1;
 				turnended = true;
+			}
+			else
+			{
+				//TODO: sound code
 			}
 		}
 		input.buttonbuffer[VK_DOWN] = true;

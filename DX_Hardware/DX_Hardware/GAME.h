@@ -24,7 +24,7 @@ extern int BACKBUFFER_HEIGHT;
 
 class GAME
 {
-	enum TEAMTURN	{ONE = 1, TWO};
+	enum TEAMLIST	{ONE = 1, TWO};
 	unsigned int teamcount;
 	unsigned int presentteamturn;
 

@@ -30,7 +30,7 @@ public:
 	~GPU();
 	void Render(XTime &Time);
 	bool ShutDown();
-	void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn);
+	void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int enemyteam);
 	void GPU::LoadPlayerAssets(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture);
 	void GPU::LoadobjAsset(OBJECT * object, char * mesh, wchar_t * texture);
 	void GPU::LoadtriAsset(OBJECT * object, wchar_t * texture, SIMPLE_VERTEX * verts, unsigned int vertcount, unsigned int * indices, unsigned int indicescount);

@@ -178,7 +178,7 @@ void GPU::Render(XTime &Time)
 }
 
 
-void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
+void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int enemyteam)
 {
 
 	if (!input.buttons[VK_END])
@@ -194,7 +194,7 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
 	{
 		unsigned int row = selectedobjecticon.positionindex[0];
 		unsigned int depth = selectedobjecticon.positionindex[1];
-		if (map[row][depth].positionstatus == presentteamturn)
+		if (map[row][depth].positionstatus == playerteam)
 		{
 			pieceselected = !pieceselected;
 			if (pieceselected)
@@ -214,20 +214,19 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
 		unsigned int depth = selectedobjecticon.positionindex[1];
 		if (!pieceselected)
 		{
-			if (map[row][depth].left != nullptr)
-			{
 				selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
 				selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
-			}
 		}
 		else
 		{
-			if (map[row][depth].left->positionstatus == 0)
+			switch (map[row][depth].left->positionstatus)
+			{
+			case 0:
 			{
 				selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
 				selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
 				map[row][depth].positionstatus = 0;
-				map[row][depth].left->positionstatus = presentteamturn;
+				map[row][depth].left->positionstatus = playerteam;
 				unsigned int objectindex = map[row][depth].occupieindex;
 				map[row][depth].occupieindex = -1;
 				map[row][depth].left->occupieindex = objectindex;
@@ -236,10 +235,13 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
 				pieceselected = !pieceselected;
 				selectedobject = -1;
 				turnended = true;
+				break;
 			}
-			else
+			case 1:
 			{
-				//TODO:sound code 
+
+				break;
+			}
 			}
 		}
 		input.buttonbuffer[VK_LEFT] = true;
@@ -256,21 +258,19 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
 		unsigned int depth = selectedobjecticon.positionindex[1];
 		if (!pieceselected)
 		{
-			if (map[row][depth].right != nullptr)
-			{
 				selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
 				selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
-			}
 		}
 		else
 		{
-			if (map[row][depth].right->positionstatus == 0)
+			switch (map[row][depth].right->positionstatus)
 			{
-
+			case 0:
+			{
 				selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
 				selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
 				map[row][depth].positionstatus = 0;
-				map[row][depth].right->positionstatus = presentteamturn;
+				map[row][depth].right->positionstatus = playerteam;
 				unsigned int objectindex = map[row][depth].occupieindex;
 				map[row][depth].occupieindex = -1;
 				map[row][depth].right->occupieindex = objectindex;
@@ -279,10 +279,13 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
 				pieceselected = !pieceselected;
 				selectedobject = -1;
 				turnended = true;
+				break;
 			}
-			else
+			case 1:
 			{
-				//TODO: sound code
+
+				break;
+			}
 			}
 		}
 		input.buttonbuffer[VK_RIGHT] = true;
@@ -298,37 +301,38 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
 		unsigned int depth = selectedobjecticon.positionindex[1];
 		if (!pieceselected)
 		{
-			if (map[row][depth].front != nullptr)
-			{
 				selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
 				selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
-			}
 		}
 		else
 		{
-			if (map[row][depth].front != nullptr && map[row][depth].front->positionstatus == 0)
+			if (map[row][depth].front != nullptr)
 			{
+				switch (map[row][depth].front->positionstatus)
+				{
+				case 0:
+				{
+					selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
+					selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
+					map[row][depth].positionstatus = 0;
+					map[row][depth].front->positionstatus = playerteam;
+					unsigned int objectindex = map[row][depth].occupieindex;
+					map[row][depth].occupieindex = -1;
+					map[row][depth].front->occupieindex = objectindex;
+					objects[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
+					objects[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
+					pieceselected = !pieceselected;
+					selectedobject = -1;
+					turnended = true;
+					//TODO: sound code
+					break;
+				}
+				case 1:
+				{
 
-
-
-				selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
-				selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
-				map[row][depth].positionstatus = 0;
-				map[row][depth].front->positionstatus = presentteamturn;
-				unsigned int objectindex = map[row][depth].occupieindex;
-				map[row][depth].occupieindex = -1;
-				map[row][depth].front->occupieindex = objectindex;
-				objects[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
-				objects[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
-				pieceselected = !pieceselected;
-				selectedobject = -1;
-				turnended = true;
-			}
-			else
-			{
-				//TODO: sound code
-				//this is where code would go that plays a negative sound for trying to movepiece to tile where a piece of the same team already is
-				//two pieces may not be on the same tile
+					break;
+				}
+				}
 			}
 		}
 		input.buttonbuffer[VK_UP] = true;
@@ -344,32 +348,38 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int presentteamturn)
 		unsigned int depth = selectedobjecticon.positionindex[1];
 		if (!pieceselected)
 		{
-			if (map[row][depth].back != nullptr)
-			{
 				selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
 				selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
-			}
 		}
 		else
 		{
-			if (map[row][depth].back != nullptr && map[row][depth].back->positionstatus == 0)
+			if (map[row][depth].back != nullptr)
 			{
-				selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
-				selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
-				map[row][depth].positionstatus = 0;
-				map[row][depth].back->positionstatus = presentteamturn;
-				unsigned int objectindex = map[row][depth].occupieindex;
-				map[row][depth].occupieindex = -1;
-				map[row][depth].back->occupieindex = objectindex;
-				objects[selectedobject].positionindex[0] = map[row][depth].back->positionindex[0];
-				objects[selectedobject].positionindex[1] = map[row][depth].back->positionindex[1];
-				pieceselected = !pieceselected;
-				selectedobject = -1;
-				turnended = true;
-			}
-			else
-			{
-				//TODO: sound code
+				switch (map[row][depth].back->positionstatus)
+				{
+				case 0:
+				{
+					selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
+					selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
+					map[row][depth].positionstatus = 0;
+					map[row][depth].back->positionstatus = playerteam;
+					unsigned int objectindex = map[row][depth].occupieindex;
+					map[row][depth].occupieindex = -1;
+					map[row][depth].back->occupieindex = objectindex;
+					objects[selectedobject].positionindex[0] = map[row][depth].back->positionindex[0];
+					objects[selectedobject].positionindex[1] = map[row][depth].back->positionindex[1];
+					pieceselected = !pieceselected;
+					selectedobject = -1;
+					turnended = true;
+					break;
+				}
+				case 1:
+				{
+
+					break;
+				}
+				}
+
 			}
 		}
 		input.buttonbuffer[VK_DOWN] = true;

@@ -25,12 +25,12 @@ void GAME::Run(XTime &T)
 	{
 	case GAME::ONE:
 	{
-		gpu->PlayerInput(gpu->teamone, ONE);
+		gpu->PlayerInput(gpu->teamone, ONE, TWO);
 		break;
 	}
 	case GAME::TWO:
 	{
-		gpu->PlayerInput(gpu->teamtwo, TWO);
+		gpu->PlayerInput(gpu->teamtwo, TWO, ONE);
 		break;
 	}
 	}

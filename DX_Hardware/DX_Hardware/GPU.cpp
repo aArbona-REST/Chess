@@ -3,7 +3,6 @@
 
 GPU::GPU(HWND &window)
 {
-	Time.Restart();
 	this->window = &window;
 
 #pragma region swap chain device context
@@ -47,7 +46,7 @@ GPU::GPU(HWND &window)
 
 #pragma region const buffer data init
 	save.LoadFromFile(camera);
-	XMStoreFloat4x4(&send_to_ram.camView, XMMatrixTranspose(XMMatrixIdentity()));
+	XMStoreFloat4x4(&send_to_ram.camView, XMMatrixTranspose(XMLoadFloat4x4(&camera)));
 
 	float aspectRatio = (float)BACKBUFFER_WIDTH / (float)BACKBUFFER_HEIGHT;
 	float fovAngleY = 70.0f * XM_PI / 180.0f;
@@ -144,8 +143,8 @@ GPU::GPU(HWND &window)
 			quadsmap[r][d].mesh.send_to_ram2.modelPos._24 += position.y;
 			quadsmap[r][d].mesh.send_to_ram2.modelPos._34 += position.z;
 			quadsmap[r][d].mesh.send_to_ram2.modelPos._44 = position.w;
-			quadsmap[r][d].positionindex[0] = r;
-			quadsmap[r][d].positionindex[1] = d;
+			quadsmap[r][d].positionindex[0] = (unsigned int)r;
+			quadsmap[r][d].positionindex[1] = (unsigned int)d;
 			liveradius += radiusincrease;
 		}
 		xcurrentslice += slice;
@@ -160,7 +159,7 @@ GPU::GPU(HWND &window)
 
 }
 
-void GPU::DrawToScreen(XTime &Time)
+void GPU::DrawToScreen()
 {
 
 	Render(teamone, piececount);
@@ -633,11 +632,12 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 
 }
 
-void GPU::CameraUpdate()
+void GPU::CameraUpdate(XTime &Time)
 {
 	XMMATRIX newcamera = XMLoadFloat4x4(&camera);
+
 	if (input.buttons['W'])
-		newcamera.r[3] = newcamera.r[3] + newcamera.r[2] * +(float)Time.Delta() * 100.0f;
+		newcamera.r[3] = newcamera.r[3] + (newcamera.r[2] * +(float)Time.Delta() * 100.0f);
 	if (input.buttons['S'])
 		newcamera.r[3] = newcamera.r[3] + newcamera.r[2] * -(float)Time.Delta() * 100.0f;
 	if (input.buttons['A'])
@@ -659,6 +659,7 @@ void GPU::CameraUpdate()
 	input.mouse_move = false;
 	XMStoreFloat4x4(&camera, newcamera);
 	XMStoreFloat4x4(&send_to_ram.camView, XMMatrixTranspose(XMMatrixInverse(0, newcamera)));
+
 
 	ZeroMemory(&mapResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 	context->Map(constBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapResource);

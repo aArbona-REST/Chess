@@ -73,6 +73,7 @@ SOFTWARE::SOFTWARE(HINSTANCE hinst, WNDPROC proc)
 
 	ShowWindow(window, SW_SHOW);
 #pragma endregion
+	Time.Restart();
 	gpu = new GPU(window);
 	game = new GAME(gpu);
 
@@ -84,7 +85,7 @@ SOFTWARE::~SOFTWARE()
 }
 bool SOFTWARE::Run()
 {
-
+	Time.Signal();
 	game->Run(Time);
 	return true;
 }

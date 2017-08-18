@@ -25,10 +25,10 @@ extern int BACKBUFFER_HEIGHT;
 class GPU
 {
 public:
-	XTime Time;
+	//XTime Time;
 	GPU(HWND &window);
 	~GPU();
-	void DrawToScreen(XTime &Time);
+	void DrawToScreen();
 	bool ShutDown();
 	void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int enemyteam);
 	void GPU::LoadPlayerAssets(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture);
@@ -36,7 +36,7 @@ public:
 	void GPU::LoadtriAsset(OBJECT * object, wchar_t * texture, SIMPLE_VERTEX * verts, unsigned int vertcount, unsigned int * indices, unsigned int indicescount);
 	void GPU::AllocateBuffer(OBJECT * object, wchar_t * texture);
 	void GPU::CreateConstantBuffer(void * data, unsigned int size, ID3D11Buffer * buffer);//bugged function and does not work. 
-	void GPU::CameraUpdate();
+	void GPU::CameraUpdate(XTime &Time);
 	void GPU::Render(OBJECT * object, unsigned int count);
 	void GPU::CreateRenderTargetView();
 	void GPU::DefineViewPort();

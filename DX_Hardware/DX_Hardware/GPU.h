@@ -28,7 +28,7 @@ public:
 	XTime Time;
 	GPU(HWND &window);
 	~GPU();
-	void Render(XTime &Time);
+	void DrawToScreen(XTime &Time);
 	bool ShutDown();
 	void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int enemyteam);
 	void GPU::LoadPlayerAssets(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture);
@@ -36,7 +36,6 @@ public:
 	void GPU::LoadtriAsset(OBJECT * object, wchar_t * texture, SIMPLE_VERTEX * verts, unsigned int vertcount, unsigned int * indices, unsigned int indicescount);
 	void GPU::AllocateBuffer(OBJECT * object, wchar_t * texture);
 	void GPU::CreateConstantBuffer(void * data, unsigned int size, ID3D11Buffer * buffer);//bugged function and does not work. 
-	void GPU::PositionUpdate(OBJECT * object, unsigned int count);
 	void GPU::CameraUpdate();
 	void GPU::Render(OBJECT * object, unsigned int count);
 	void GPU::CreateRenderTargetView();

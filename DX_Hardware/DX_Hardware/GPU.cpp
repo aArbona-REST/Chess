@@ -144,6 +144,8 @@ GPU::GPU(HWND &window)
 			quadsmap[r][d].mesh.send_to_ram2.modelPos._24 += position.y;
 			quadsmap[r][d].mesh.send_to_ram2.modelPos._34 += position.z;
 			quadsmap[r][d].mesh.send_to_ram2.modelPos._44 = position.w;
+			quadsmap[r][d].positionindex[0] = r;
+			quadsmap[r][d].positionindex[1] = d;
 			liveradius += radiusincrease;
 		}
 		xcurrentslice += slice;
@@ -158,16 +160,13 @@ GPU::GPU(HWND &window)
 
 }
 
-void GPU::Render(XTime &Time)
+void GPU::DrawToScreen(XTime &Time)
 {
 
-	PositionUpdate(teamone, piececount);
 	Render(teamone, piececount);
 
-	PositionUpdate(teamtwo, piececount);
 	Render(teamtwo, piececount);
 
-	PositionUpdate(&selectedobjecticon, 1);
 	Render(&selectedobjecticon, 1);
 
 	for (size_t r = 0; r < row; r++)
@@ -214,8 +213,8 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 		unsigned int depth = selectedobjecticon.positionindex[1];
 		if (!pieceselected)
 		{
-				selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
-				selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
+			selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
+			selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
 		}
 		else
 		{
@@ -230,8 +229,16 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 				unsigned int objectindex = map[row][depth].occupieindex;
 				map[row][depth].occupieindex = -1;
 				map[row][depth].left->occupieindex = objectindex;
-				objects[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
-				objects[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
+				if (playerteam == 1)
+				{
+					teamone[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
+					teamone[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
+				}
+				else if (playerteam == 2)
+				{
+					teamtwo[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
+					teamtwo[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
+				}
 				pieceselected = !pieceselected;
 				selectedobject = -1;
 				turnended = true;
@@ -239,6 +246,60 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 			}
 			case 1:
 			{
+
+				switch (playerteam)
+				{
+				case 2:
+				{
+					teamone[map[row][depth].left->occupieindex].alive = false;
+
+					selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
+					selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
+					map[row][depth].positionstatus = 0;
+					map[row][depth].left->positionstatus = playerteam;
+					unsigned int objectindex = map[row][depth].occupieindex;
+					map[row][depth].occupieindex = -1;
+					map[row][depth].left->occupieindex = objectindex;
+
+
+					teamtwo[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
+					teamtwo[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
+					pieceselected = !pieceselected;
+					selectedobject = -1;
+					turnended = true;
+				}
+				default:
+					break;
+				}
+
+				break;
+			}
+			case 2:
+			{
+				switch (playerteam)
+				{
+				case 1:
+				{
+					teamtwo[map[row][depth].left->occupieindex].alive = false;
+
+					selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
+					selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
+					map[row][depth].positionstatus = 0;
+					map[row][depth].left->positionstatus = playerteam;
+					unsigned int objectindex = map[row][depth].occupieindex;
+					map[row][depth].occupieindex = -1;
+					map[row][depth].left->occupieindex = objectindex;
+
+
+					teamone[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
+					teamone[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
+					pieceselected = !pieceselected;
+					selectedobject = -1;
+					turnended = true;
+				}
+				default:
+					break;
+				}
 
 				break;
 			}
@@ -258,8 +319,8 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 		unsigned int depth = selectedobjecticon.positionindex[1];
 		if (!pieceselected)
 		{
-				selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
-				selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
+			selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
+			selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
 		}
 		else
 		{
@@ -274,8 +335,16 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 				unsigned int objectindex = map[row][depth].occupieindex;
 				map[row][depth].occupieindex = -1;
 				map[row][depth].right->occupieindex = objectindex;
-				objects[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
-				objects[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
+				if (playerteam == 1)
+				{
+					teamone[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
+					teamone[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
+				}
+				else if (playerteam == 2)
+				{
+					teamtwo[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
+					teamtwo[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
+				}
 				pieceselected = !pieceselected;
 				selectedobject = -1;
 				turnended = true;
@@ -283,6 +352,60 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 			}
 			case 1:
 			{
+
+				switch (playerteam)
+				{
+				case 2:
+				{
+					teamone[map[row][depth].right->occupieindex].alive = false;
+
+					selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
+					selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
+					map[row][depth].positionstatus = 0;
+					map[row][depth].right->positionstatus = playerteam;
+					unsigned int objectindex = map[row][depth].occupieindex;
+					map[row][depth].occupieindex = -1;
+					map[row][depth].right->occupieindex = objectindex;
+
+
+					teamtwo[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
+					teamtwo[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
+					pieceselected = !pieceselected;
+					selectedobject = -1;
+					turnended = true;
+				}
+				default:
+					break;
+				}
+
+				break;
+			}
+			case 2:
+			{
+				switch (playerteam)
+				{
+				case 1:
+				{
+					teamtwo[map[row][depth].right->occupieindex].alive = false;
+
+					selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
+					selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
+					map[row][depth].positionstatus = 0;
+					map[row][depth].right->positionstatus = playerteam;
+					unsigned int objectindex = map[row][depth].occupieindex;
+					map[row][depth].occupieindex = -1;
+					map[row][depth].right->occupieindex = objectindex;
+
+
+					teamone[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
+					teamone[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
+					pieceselected = !pieceselected;
+					selectedobject = -1;
+					turnended = true;
+				}
+				default:
+					break;
+				}
 
 				break;
 			}
@@ -299,15 +422,16 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 	{
 		unsigned int row = selectedobjecticon.positionindex[0];
 		unsigned int depth = selectedobjecticon.positionindex[1];
-		if (!pieceselected)
+		if (!pieceselected && map[row][depth].front != nullptr)
 		{
-				selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
-				selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
+			selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
+			selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
 		}
 		else
 		{
 			if (map[row][depth].front != nullptr)
 			{
+
 				switch (map[row][depth].front->positionstatus)
 				{
 				case 0:
@@ -319,8 +443,16 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 					unsigned int objectindex = map[row][depth].occupieindex;
 					map[row][depth].occupieindex = -1;
 					map[row][depth].front->occupieindex = objectindex;
-					objects[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
-					objects[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
+					if (playerteam == 1)
+					{
+						teamone[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
+						teamone[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
+					}
+					else if (playerteam == 2)
+					{
+						teamtwo[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
+						teamtwo[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
+					}
 					pieceselected = !pieceselected;
 					selectedobject = -1;
 					turnended = true;
@@ -329,6 +461,60 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 				}
 				case 1:
 				{
+					switch (playerteam)
+					{
+					case 2:
+					{
+						teamone[map[row][depth].front->occupieindex].alive = false;
+
+						selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].front->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].front->occupieindex = objectindex;
+
+						
+						teamtwo[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
+						teamtwo[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
+						pieceselected = !pieceselected;
+						selectedobject = -1;
+						turnended = true;
+					}
+					default:
+						break;
+					}
+			
+					break;
+				}
+				case 2:
+				{
+
+					switch (playerteam)
+					{
+					case 1:
+					{
+						teamtwo[map[row][depth].front->occupieindex].alive = false;
+
+						selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].front->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].front->occupieindex = objectindex;
+
+
+						teamone[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
+						teamone[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
+						pieceselected = !pieceselected;
+						selectedobject = -1;
+						turnended = true;
+					}
+					default:
+						break;
+					}
 
 					break;
 				}
@@ -346,10 +532,10 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 	{
 		unsigned int row = selectedobjecticon.positionindex[0];
 		unsigned int depth = selectedobjecticon.positionindex[1];
-		if (!pieceselected)
+		if (!pieceselected && map[row][depth].back != nullptr)
 		{
-				selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
-				selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
+			selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
+			selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
 		}
 		else
 		{
@@ -366,8 +552,16 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 					unsigned int objectindex = map[row][depth].occupieindex;
 					map[row][depth].occupieindex = -1;
 					map[row][depth].back->occupieindex = objectindex;
-					objects[selectedobject].positionindex[0] = map[row][depth].back->positionindex[0];
-					objects[selectedobject].positionindex[1] = map[row][depth].back->positionindex[1];
+					if (playerteam == 1)
+					{
+						teamone[selectedobject].positionindex[0] = map[row][depth].back->positionindex[0];
+						teamone[selectedobject].positionindex[1] = map[row][depth].back->positionindex[1];
+					}
+					else if (playerteam == 2)
+					{
+						teamtwo[selectedobject].positionindex[0] = map[row][depth].back->positionindex[0];
+						teamtwo[selectedobject].positionindex[1] = map[row][depth].back->positionindex[1];
+					}
 					pieceselected = !pieceselected;
 					selectedobject = -1;
 					turnended = true;
@@ -375,7 +569,58 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 				}
 				case 1:
 				{
+					switch (playerteam)
+					{
+					case 2:
+					{
+						teamone[map[row][depth].back->occupieindex].alive = false;
 
+						selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].back->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].back->occupieindex = objectindex;
+
+
+						teamtwo[selectedobject].positionindex[0] = map[row][depth].back->positionindex[0];
+						teamtwo[selectedobject].positionindex[1] = map[row][depth].back->positionindex[1];
+						pieceselected = !pieceselected;
+						selectedobject = -1;
+						turnended = true;
+					}
+					default:
+						break;
+					}
+					break;
+				}
+				case 2:
+				{
+					switch (playerteam)
+					{
+					case 1:
+					{
+						teamtwo[map[row][depth].back->occupieindex].alive = false;
+
+						selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].back->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].back->occupieindex = objectindex;
+
+
+						teamone[selectedobject].positionindex[0] = map[row][depth].back->positionindex[0];
+						teamone[selectedobject].positionindex[1] = map[row][depth].back->positionindex[1];
+						pieceselected = !pieceselected;
+						selectedobject = -1;
+						turnended = true;
+					}
+					default:
+						break;
+					}
 					break;
 				}
 				}
@@ -392,13 +637,13 @@ void GPU::CameraUpdate()
 {
 	XMMATRIX newcamera = XMLoadFloat4x4(&camera);
 	if (input.buttons['W'])
-		newcamera.r[3] = newcamera.r[3] + newcamera.r[2] * +(float)Time.Delta() * 10.0f;
+		newcamera.r[3] = newcamera.r[3] + newcamera.r[2] * +(float)Time.Delta() * 100.0f;
 	if (input.buttons['S'])
-		newcamera.r[3] = newcamera.r[3] + newcamera.r[2] * -(float)Time.Delta() * 10.0f;
+		newcamera.r[3] = newcamera.r[3] + newcamera.r[2] * -(float)Time.Delta() * 100.0f;
 	if (input.buttons['A'])
-		newcamera.r[3] = newcamera.r[3] + newcamera.r[0] * -(float)Time.Delta() * 10.0f;
+		newcamera.r[3] = newcamera.r[3] + newcamera.r[0] * -(float)Time.Delta() * 100.0f;
 	if (input.buttons['D'])
-		newcamera.r[3] = newcamera.r[3] + newcamera.r[0] * +(float)Time.Delta() * 10.0f;
+		newcamera.r[3] = newcamera.r[3] + newcamera.r[0] * +(float)Time.Delta() * 100.0f;
 	if (input.mouse_move)
 		if (input.left_click)
 		{
@@ -421,7 +666,7 @@ void GPU::CameraUpdate()
 	context->Unmap(constBuffer, 0);
 }
 
-void GPU::PositionUpdate(OBJECT * object, unsigned int count)
+void GPU::Render(OBJECT * object, unsigned int count)
 {
 	for (size_t i = 0; i < count; i++)
 	{
@@ -430,16 +675,6 @@ void GPU::PositionUpdate(OBJECT * object, unsigned int count)
 		object[i].mesh.send_to_ram2.modelPos._14 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.x;
 		object[i].mesh.send_to_ram2.modelPos._24 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.y;
 		object[i].mesh.send_to_ram2.modelPos._34 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.z;
-	}
-
-}
-
-void GPU::Render(OBJECT * object, unsigned int count)
-{
-	for (size_t i = 0; i < count; i++)
-	{
-		if (!object[i].alive)
-			continue;
 		ZeroMemory(&mapResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 		context->Map(object[i].mesh.constbuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapResource);
 		memcpy(mapResource.pData, &object[i].mesh.send_to_ram2, sizeof(ANIMATION_VRAM));

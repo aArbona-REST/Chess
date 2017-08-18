@@ -8,11 +8,6 @@
 #include "GPU.h"
 #include "PLAYER.h"
 
-//#include "Trivial_PS.csh"
-//#include "Trivial_VS.csh"
-//#include "BasicShader.csh"
-//#include "BasicPixelShader.csh"
-
 #include <d3d11.h>
 #include <DirectXMath.h>
 

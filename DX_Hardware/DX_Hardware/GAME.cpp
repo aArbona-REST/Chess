@@ -17,7 +17,6 @@ GAME::~GAME()
 void GAME::Run(XTime &T)
 {
 
-
 	switch (presentteamturn)
 	{
 	case GAME::ONE:
@@ -38,8 +37,6 @@ void GAME::Run(XTime &T)
 			presentteamturn = 1;
 		gpu->turnended = false;
 	}
-	gpu->Clear();
-	gpu->Set();
 	gpu->CameraUpdate(T);
 	gpu->DrawToScreen();
 

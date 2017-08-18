@@ -18,32 +18,6 @@ GPU::GPU(HWND &window)
 
 #pragma endregion
 
-#pragma region quad
-	unsigned int groundPlaneindex[6]{ 0,1,3,1,2,3 };
-	SIMPLE_VERTEX groundPlane[4]{};
-	groundPlane[0].xyzw = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
-	groundPlane[1].xyzw = XMFLOAT4(1.0f, 0.0f, -1.0f, 1.0f);
-	groundPlane[2].xyzw = XMFLOAT4(-1.0f, 0.0f, -1.0f, 1.0f);
-	groundPlane[3].xyzw = XMFLOAT4(-1.0f, 0.0f, 1.0f, 1.0f);
-	XMFLOAT4 groundColor{ 1.0f, 1.0f, 1.0f, 0.0f };
-	groundPlane[0].color = groundColor;
-	groundPlane[1].color = groundColor;
-	groundPlane[2].color = groundColor;
-	groundPlane[3].color = groundColor;
-	groundPlane[0].normal = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
-	groundPlane[1].normal = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
-	groundPlane[2].normal = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
-	groundPlane[3].normal = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
-	groundPlane[0].uv = XMFLOAT2(0.0f, 1.0f);
-	groundPlane[1].uv = XMFLOAT2(1.0f, 1.0f);
-	groundPlane[2].uv = XMFLOAT2(1.0f, 0.0f);
-	groundPlane[3].uv = XMFLOAT2(0.0f, 0.0f);
-#pragma endregion
-
-#pragma region textures
-	CreateDDSTextureFromFile(device, L"TestCube.dds", nullptr, &pModelTexture);
-#pragma endregion
-
 #pragma region const buffer data init
 	save.LoadFromFile(camera);
 	XMStoreFloat4x4(&send_to_ram.camView, XMMatrixTranspose(XMLoadFloat4x4(&camera)));
@@ -70,9 +44,7 @@ GPU::GPU(HWND &window)
 #pragma endregion
 
 #pragma region shaders and imput layout
-	device->CreateVertexShader(Trivial_VS, sizeof(Trivial_VS), NULL, &vertexshader);
-	device->CreatePixelShader(Trivial_PS, sizeof(Trivial_PS), NULL, &pixelshader);
-	device->CreateVertexShader(BasicShader, sizeof(BasicShader), NULL, &Basicvertexshader);
+	device->CreateVertexShader(BasicVertexShader, sizeof(BasicVertexShader), NULL, &Basicvertexshader);
 	device->CreatePixelShader(BasicPixelShader, sizeof(BasicPixelShader), NULL, &Basicpixelshader);
 
 	D3D11_INPUT_ELEMENT_DESC vertlayout[] =
@@ -85,16 +57,10 @@ GPU::GPU(HWND &window)
 		"WEIGHT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0,
 	};
 	UINT numElements = ARRAYSIZE(vertlayout);
-	device->CreateInputLayout(vertlayout, numElements, Trivial_VS, sizeof(Trivial_VS), &layout);
+	device->CreateInputLayout(vertlayout, numElements, BasicVertexShader, sizeof(BasicVertexShader), &layout);
 #pragma endregion
 
-#pragma region map quad buffers
-	for (size_t r = 0; r < row; r++)
-		for (size_t d = 0; d < depth; d++)
-			LoadtriAsset(&quadsmap[r][d], L"TestCube.dds", groundPlane, 4, groundPlaneindex, 6);
-#pragma endregion
-
-#pragma region generate quad locations
+#pragma region generate map
 
 
 	float xcurrentslice = 0.5f, ycurrentslice = 0.0f, zcurrentslice = 0.5f, x = 0.0f, y = 0.0f, z = 0.0f;
@@ -111,40 +77,27 @@ GPU::GPU(HWND &window)
 		for (size_t d = 0; d < depth; d++)
 		{
 			position = XMFLOAT4((x * liveradius), (y * liveradius), (z * liveradius), 1.0f);
-			/////////////////////////
 			map[r][d].positionindex[0] = (unsigned int)r;
 			map[r][d].positionindex[1] = (unsigned int)d;
 			map[r][d].positionstatus = 0;
 			map[r][d].occupieindex = 0;
 			map[r][d].position = position;
-			//front node//
 			if (d == 0)
 				map[r][d].front = nullptr;
 			else
 				map[r][d].front = &(map[r][d - 1]);
-			//back node //
 			if (d == depth - 1)
 				map[r][d].back = nullptr;
 			else
 				map[r][d].back = &(map[r][d + 1]);
-			//left node//
 			if (r == 0)
 				map[r][d].left = &(map[row - 1][d]);
 			else
 				map[r][d].left = &(map[r - 1][d]);
-			//right node//
 			if (r == row - 1)
 				map[r][d].right = &(map[row - row][d]);
 			else
 				map[r][d].right = &(map[r + 1][d]);
-			///////////////
-			positionstatus[r][d] = 0;
-			quadsmap[r][d].mesh.send_to_ram2.modelPos._14 += position.x;
-			quadsmap[r][d].mesh.send_to_ram2.modelPos._24 += position.y;
-			quadsmap[r][d].mesh.send_to_ram2.modelPos._34 += position.z;
-			quadsmap[r][d].mesh.send_to_ram2.modelPos._44 = position.w;
-			quadsmap[r][d].positionindex[0] = (unsigned int)r;
-			quadsmap[r][d].positionindex[1] = (unsigned int)d;
 			liveradius += radiusincrease;
 		}
 		xcurrentslice += slice;
@@ -153,6 +106,20 @@ GPU::GPU(HWND &window)
 	}
 #pragma endregion
 
+	for (size_t r = 0; r < row; r++)
+	{
+		for (size_t d = 0; d < depth; d++)
+		{
+			quadsmap[r][d].mesh.send_to_ram2.modelPos._14 = map[r][d].position.x;
+			quadsmap[r][d].mesh.send_to_ram2.modelPos._24 = map[r][d].position.y;
+			quadsmap[r][d].mesh.send_to_ram2.modelPos._34 = map[r][d].position.z;
+			quadsmap[r][d].mesh.send_to_ram2.modelPos._44 = map[r][d].position.w;
+			quadsmap[r][d].positionindex[0] = (unsigned int)r;
+			quadsmap[r][d].positionindex[1] = (unsigned int)d;
+			LoadQuad(&quadsmap[r][d], L"TestCube.dds");
+		}
+	}
+	LoadQuad(&billboard, L"TestCube.dds");
 	LoadPlayerAssets(1, teamone, "talon.obj", L"talon.dds");
 	LoadPlayerAssets(2, teamtwo, "talon.obj", L"gladiator.dds");
 	LoadobjAsset(&selectedobjecticon, "sphere.obj", L"talon.dds");
@@ -161,16 +128,29 @@ GPU::GPU(HWND &window)
 
 void GPU::DrawToScreen()
 {
-
+	Clear();
+	Set();
 	Render(teamone, piececount);
-
 	Render(teamtwo, piececount);
-
 	Render(&selectedobjecticon, 1);
-
 	for (size_t r = 0; r < row; r++)
 		for (size_t d = 0; d < depth; d++)
 			Render(&quadsmap[r][d], 1);
+
+#pragma region billboard example
+	XMVECTOR billboardpos = XMLoadFloat4x4(&billboard.mesh.send_to_ram2.modelPos).r[3];
+	XMFLOAT4 up = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+	XMVECTOR billboardup = XMLoadFloat4(&up);
+	XMVECTOR camerapos = XMLoadFloat4x4(&camera).r[3];
+
+	XMMATRIX m = XMMatrixLookAtLH(
+		billboardpos,
+		billboardup,
+		camerapos
+	);
+	XMStoreFloat4x4(&billboard.mesh.send_to_ram2.modelPos, m);
+	RenderExact(&billboard, 1);
+#pragma endregion
 
 	swapchain->Present(0, 0);
 }
@@ -266,11 +246,10 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 					pieceselected = !pieceselected;
 					selectedobject = -1;
 					turnended = true;
-				}
-				default:
+					teamonecount--;
 					break;
 				}
-
+				}
 				break;
 			}
 			case 2:
@@ -295,11 +274,10 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 					pieceselected = !pieceselected;
 					selectedobject = -1;
 					turnended = true;
-				}
-				default:
+					teamtwocount--;
 					break;
 				}
-
+				}
 				break;
 			}
 			}
@@ -372,11 +350,10 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 					pieceselected = !pieceselected;
 					selectedobject = -1;
 					turnended = true;
-				}
-				default:
+					teamonecount--;
 					break;
 				}
-
+				}
 				break;
 			}
 			case 2:
@@ -401,11 +378,10 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 					pieceselected = !pieceselected;
 					selectedobject = -1;
 					turnended = true;
-				}
-				default:
+					teamtwocount--;
 					break;
 				}
-
+				}
 				break;
 			}
 			}
@@ -480,11 +456,10 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 						pieceselected = !pieceselected;
 						selectedobject = -1;
 						turnended = true;
-					}
-					default:
+						teamonecount--;
 						break;
 					}
-			
+					}
 					break;
 				}
 				case 2:
@@ -510,11 +485,10 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 						pieceselected = !pieceselected;
 						selectedobject = -1;
 						turnended = true;
-					}
-					default:
+						teamtwocount--;
 						break;
 					}
-
+					}
 					break;
 				}
 				}
@@ -588,9 +562,9 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 						pieceselected = !pieceselected;
 						selectedobject = -1;
 						turnended = true;
-					}
-					default:
+						teamonecount--;
 						break;
+					}
 					}
 					break;
 				}
@@ -616,9 +590,9 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 						pieceselected = !pieceselected;
 						selectedobject = -1;
 						turnended = true;
-					}
-					default:
+						teamtwocount--;
 						break;
+					}
 					}
 					break;
 				}
@@ -665,6 +639,28 @@ void GPU::CameraUpdate(XTime &Time)
 	context->Map(constBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapResource);
 	memcpy(mapResource.pData, &send_to_ram, sizeof(VRAM));
 	context->Unmap(constBuffer, 0);
+}
+
+void GPU::RenderExact(OBJECT * object, unsigned int count)
+{
+	for (size_t i = 0; i < count; i++)
+	{
+		if (!object[i].alive)
+			continue;
+		ZeroMemory(&mapResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+		context->Map(object[i].mesh.constbuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapResource);
+		memcpy(mapResource.pData, &object[i].mesh.send_to_ram2, sizeof(ANIMATION_VRAM));
+		context->Unmap(object[i].mesh.constbuffer, 0);
+		context->VSSetShader(object[i].mesh.vs, NULL, NULL);
+		context->PSSetShader(object[i].mesh.ps, NULL, NULL);
+		context->VSSetConstantBuffers(1, 1, &object[i].mesh.constbuffer);
+		context->IASetPrimitiveTopology(object[i].mesh.topology);
+		context->IASetVertexBuffers(0, 1, &object[i].mesh.vertb, &stride, &offset);
+		context->IASetIndexBuffer(object[i].mesh.indexb, DXGI_FORMAT_R32_UINT, offset);
+		context->RSSetState(object[i].mesh.rs);
+		context->PSSetShaderResources(0, 1, &object[i].mesh.texture);
+		context->DrawIndexed(object[i].mesh.modelindexcount, 0, 0);
+	}
 }
 
 void GPU::Render(OBJECT * object, unsigned int count)
@@ -820,7 +816,7 @@ void GPU::LoadPlayerAssets(unsigned int team, OBJECT * object, char * mesh, wcha
 	{
 		map[init_row][init_depth].positionstatus = team;
 		map[init_row][init_depth].occupieindex = (unsigned int)i;
-		positionstatus[init_row][init_depth] = team;
+
 		object[i].positionindex[0] = init_row;
 		object[i].positionindex[1] = init_depth;
 		init_depth += 1;
@@ -829,7 +825,7 @@ void GPU::LoadPlayerAssets(unsigned int team, OBJECT * object, char * mesh, wcha
 			init_row += 1;
 			init_depth = 1;
 		}
-		object[i].mesh.initobj(BasicShader, sizeof(BasicShader), BasicPixelShader, sizeof(BasicPixelShader), mesh);
+		object[i].mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), mesh);
 		XMStoreFloat4x4(&object[i].mesh.send_to_ram2.modelPos, XMMatrixTranspose(XMMatrixIdentity()));
 		AllocateBuffer(&object[i], texture);
 	}
@@ -837,15 +833,16 @@ void GPU::LoadPlayerAssets(unsigned int team, OBJECT * object, char * mesh, wcha
 
 void GPU::LoadobjAsset(OBJECT * object, char * mesh, wchar_t * texture)
 {
-	object->mesh.initobj(BasicShader, sizeof(BasicShader), BasicPixelShader, sizeof(BasicPixelShader), mesh);
+	object->mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), mesh);
 	XMStoreFloat4x4(&object->mesh.send_to_ram2.modelPos, XMMatrixTranspose(XMMatrixIdentity()));
 	AllocateBuffer(object, texture);
 
 }
 
-void GPU::LoadtriAsset(OBJECT * object, wchar_t * texture, SIMPLE_VERTEX * verts, unsigned int vertcount, unsigned int * indices, unsigned int indicescount)
+void GPU::LoadQuad(OBJECT * object, wchar_t * texture)
 {
-	object->mesh.inittridebug(BasicShader, sizeof(BasicShader), BasicPixelShader, sizeof(BasicPixelShader), verts, vertcount, indices, indicescount);
+
+	object->mesh.inittridebug(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), quad.groundPlane, quad.vertcount, quad.groundPlaneindex, quad.indexcount);
 	XMStoreFloat4x4(&object->mesh.send_to_ram2.modelPos, XMMatrixTranspose(XMMatrixIdentity()));
 	AllocateBuffer(object, texture);
 }
@@ -860,8 +857,6 @@ bool GPU::ShutDown()
 	depthStencil->Release();
 	depthStencilView->Release();
 	layout->Release();
-	vertexshader->Release();
-	pixelshader->Release();
 	constBuffer->Release();
 	return true;
 }

@@ -29,9 +29,9 @@ public:
 	void DrawToScreen();
 	bool ShutDown();
 	void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int enemyteam);
-	void GPU::LoadPlayerAssets(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture);
-	void GPU::LoadobjAsset(OBJECT * object, char * mesh, wchar_t * texture);
-	void GPU::LoadQuad(OBJECT * object, wchar_t * texture);
+	void GPU::InitalizePlayerAssets(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture);
+	void GPU::InitalizeobjAsset(OBJECT * object, char * mesh, wchar_t * texture);
+	void GPU::InitalizeQuad(OBJECT * object, wchar_t * texture);
 	void GPU::AllocateBuffer(OBJECT * object, wchar_t * texture);
 	void GPU::CreateConstantBuffer(void * data, unsigned int size, ID3D11Buffer * buffer);//bugged function and does not work. 
 	void GPU::CameraUpdate(XTime &Time);
@@ -41,6 +41,13 @@ public:
 	void GPU::DefineViewPort();
 	void GPU::DefineAndCreateDepthStencil();
 private:
+	void GPU::LoadTitan(unsigned int team, OBJECT * object);
+	void GPU::LoadBattleship(unsigned int team, OBJECT * object);
+	void GPU::LoadCruiser(unsigned int team, OBJECT * object);
+	void GPU::LoadFrigate(unsigned int team, OBJECT * object);
+	void GPU::LoadDestroyer(unsigned int team, OBJECT * object);
+	void GPU::LoadFighter(unsigned int team, OBJECT * object);
+
 	void GPU::Set();
 	void GPU::Clear();
 	float color[4]{ 0.2f, 0.2f, 0.5f, 0.0f };

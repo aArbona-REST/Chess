@@ -18,9 +18,20 @@ GPU::GPU(HWND &window)
 
 #pragma endregion
 
-#pragma region const buffer data init
-	save.LoadFromFile(camera);
+#pragma region camera init
+
+	XMMATRIX m = {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 10.0f, 0.0f, 1.0f
+	};
+	//ten units in y  and 100 units in negative z 
+	//save.LoadFromFile(camera);
+	XMStoreFloat4x4(&camera, m);
 	XMStoreFloat4x4(&send_to_ram.camView, XMMatrixTranspose(XMLoadFloat4x4(&camera)));
+
+
 
 	float aspectRatio = (float)BACKBUFFER_WIDTH / (float)BACKBUFFER_HEIGHT;
 	float fovAngleY = 70.0f * XM_PI / 180.0f;
@@ -106,6 +117,7 @@ GPU::GPU(HWND &window)
 	}
 #pragma endregion
 
+#pragma region load assets
 	for (size_t r = 0; r < row; r++)
 	{
 		for (size_t d = 0; d < depth; d++)
@@ -116,18 +128,22 @@ GPU::GPU(HWND &window)
 			quadsmap[r][d].mesh.send_to_ram2.modelPos._44 = map[r][d].position.w;
 			quadsmap[r][d].positionindex[0] = (unsigned int)r;
 			quadsmap[r][d].positionindex[1] = (unsigned int)d;
-			LoadQuad(&quadsmap[r][d], L"TestCube.dds");
+			//replace this testcube.dds with one that is easy on the eyes. (Eg. all white)
+			InitalizeQuad(&quadsmap[r][d], L"TestCube.dds");
 		}
 	}
-	LoadQuad(&billboard, L"TestCube.dds");
-	LoadPlayerAssets(1, teamone, "talon.obj", L"talon.dds");
-	LoadPlayerAssets(2, teamtwo, "talon.obj", L"gladiator.dds");
-	LoadobjAsset(&selectedobjecticon, "sphere.obj", L"talon.dds");
+	InitalizeQuad(&billboard, L"TestCube.dds");
+
+	InitalizePlayerAssets(1, teamone, "talon.obj", L"talon.dds");
+	InitalizePlayerAssets(2, teamtwo, "talon.obj", L"gladiator.dds");
+	InitalizeobjAsset(&selectedobjecticon, "sphere.obj", L"talon.dds");
+#pragma endregion
 
 }
 
 void GPU::DrawToScreen()
 {
+
 	Clear();
 	Set();
 	Render(teamone, piececount);
@@ -138,23 +154,26 @@ void GPU::DrawToScreen()
 			Render(&quadsmap[r][d], 1);
 
 #pragma region billboard example
+
+
 	XMVECTOR billboardpos = XMLoadFloat4x4(&billboard.mesh.send_to_ram2.modelPos).r[3];
+
 	XMFLOAT4 up = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
 	XMVECTOR billboardup = XMLoadFloat4(&up);
+
 	XMVECTOR camerapos = XMLoadFloat4x4(&camera).r[3];
 
-	XMMATRIX m = XMMatrixLookAtLH(
-		billboardpos,
-		billboardup,
-		camerapos
-	);
+	XMMATRIX m = XMMatrixLookAtLH(billboardpos, billboardup, camerapos);
+
 	XMStoreFloat4x4(&billboard.mesh.send_to_ram2.modelPos, m);
+
+
+
 	RenderExact(&billboard, 1);
 #pragma endregion
 
 	swapchain->Present(0, 0);
 }
-
 
 void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int enemyteam)
 {
@@ -182,6 +201,10 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 		}
 		input.buttonbuffer[VK_RETURN] = true;
 	}
+
+	//TODO: add a switch
+	//switch used for reading selected piece and
+	//moving the piece where it is allowed to move according to the game piece rules
 
 #pragma region left
 	if (!input.buttons[VK_LEFT])
@@ -390,10 +413,10 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 	}
 #pragma endregion
 
-#pragma region front
-	if (!input.buttons[VK_UP])
-		input.buttonbuffer[VK_UP] = false;
-	if (input.buttonbuffer[VK_UP] == false && input.buttons[VK_UP])
+#pragma region down
+	if (!input.buttons[VK_DOWN])
+		input.buttonbuffer[VK_DOWN] = false;
+	if (input.buttonbuffer[VK_DOWN] == false && input.buttons[VK_DOWN])
 	{
 		unsigned int row = selectedobjecticon.positionindex[0];
 		unsigned int depth = selectedobjecticon.positionindex[1];
@@ -428,10 +451,14 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 						teamtwo[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
 						teamtwo[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
 					}
+					//TODO: the pieceselected, selectedobject, and turnended
+					//some how make them toggle only when the player has moved
+					//the selected piece one space at least, or to the pieces max range
 					pieceselected = !pieceselected;
 					selectedobject = -1;
 					turnended = true;
-					//TODO: sound code
+					//
+					//TODO: sound code(low priority)
 					break;
 				}
 				case 1:
@@ -450,7 +477,7 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 						map[row][depth].occupieindex = -1;
 						map[row][depth].front->occupieindex = objectindex;
 
-						
+
 						teamtwo[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
 						teamtwo[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
 						pieceselected = !pieceselected;
@@ -494,14 +521,14 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 				}
 			}
 		}
-		input.buttonbuffer[VK_UP] = true;
+		input.buttonbuffer[VK_DOWN] = true;
 	}
 #pragma endregion
 
-#pragma region back
-	if (!input.buttons[VK_DOWN])
-		input.buttonbuffer[VK_DOWN] = false;
-	if (input.buttonbuffer[VK_DOWN] == false && input.buttons[VK_DOWN])
+#pragma region up
+	if (!input.buttons[VK_UP])
+		input.buttonbuffer[VK_UP] = false;
+	if (input.buttonbuffer[VK_UP] == false && input.buttons[VK_UP])
 	{
 		unsigned int row = selectedobjecticon.positionindex[0];
 		unsigned int depth = selectedobjecticon.positionindex[1];
@@ -600,7 +627,7 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 
 			}
 		}
-		input.buttonbuffer[VK_DOWN] = true;
+		input.buttonbuffer[VK_UP] = true;
 	}
 #pragma endregion
 
@@ -608,6 +635,7 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 
 void GPU::CameraUpdate(XTime &Time)
 {
+
 	XMMATRIX newcamera = XMLoadFloat4x4(&camera);
 
 	if (input.buttons['W'])
@@ -625,9 +653,9 @@ void GPU::CameraUpdate(XTime &Time)
 			XMFLOAT4 zeropos = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 			newcamera.r[3] = XMLoadFloat4(&zeropos);
 			newcamera =
-				XMMatrixRotationX(input.diffy * (float)Time.Delta() * 10.0f)
+				XMMatrixRotationX(-input.diffy * (float)Time.Delta() * 10.0f)
 				* newcamera
-				* XMMatrixRotationY(input.diffx * (float)Time.Delta() * 10.0f);
+				* XMMatrixRotationY(-input.diffx * (float)Time.Delta() * 10.0f);
 			newcamera.r[3] = pos;
 		}
 	input.mouse_move = false;
@@ -687,7 +715,6 @@ void GPU::Render(OBJECT * object, unsigned int count)
 		context->DrawIndexed(object[i].mesh.modelindexcount, 0, 0);
 	}
 }
-
 
 void GPU::Set()
 {
@@ -797,7 +824,7 @@ void GPU::CreateConstantBuffer(void * data, unsigned int size, ID3D11Buffer * bu
 
 }
 
-void GPU::LoadPlayerAssets(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture)
+void GPU::InitalizePlayerAssets(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture)
 {
 	unsigned int init_row = 0;
 	unsigned int init_depth = 0;
@@ -825,13 +852,162 @@ void GPU::LoadPlayerAssets(unsigned int team, OBJECT * object, char * mesh, wcha
 			init_row += 1;
 			init_depth = 1;
 		}
-		object[i].mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), mesh);
 		XMStoreFloat4x4(&object[i].mesh.send_to_ram2.modelPos, XMMatrixTranspose(XMMatrixIdentity()));
-		AllocateBuffer(&object[i], texture);
+
+		switch (i)
+		{
+		case 0:
+		{
+			LoadDestroyer(team, &object[i]);
+			break;
+		}
+		case 1:
+		{
+			LoadFrigate(team, &object[i]);
+			break;
+		}
+		case 2:
+		{
+			LoadFighter(team, &object[i]);
+			break;
+		}
+		case 3:
+		{
+			LoadFighter(team, &object[i]);
+			break;
+		}
+		case 4:
+		{
+			LoadFrigate(team, &object[i]);
+			break;
+		}
+		case 5:
+		{
+			LoadDestroyer(team, &object[i]);
+			break;
+		}
+		case 6:
+		{
+			LoadCruiser(team, &object[i]);
+			break;
+		}
+		case 7:
+		{
+			LoadBattleship(team, &object[i]);
+			break;
+		}
+		case 8:
+		{
+			LoadTitan(team, &object[i]);
+			break;
+		}
+		case 9:
+		{
+			LoadTitan(team, &object[i]);
+			break;
+		}
+		case 10:
+		{
+			LoadBattleship(team, &object[i]);
+			break;
+		}
+		case 11:
+		{
+			LoadCruiser(team, &object[i]);
+			break;
+		}
+		case 12:
+		{
+			LoadDestroyer(team, &object[i]);
+			break;
+		}
+		case 13:
+		{
+			LoadFrigate(team, &object[i]);
+			break;
+		}
+		case 14:
+		{
+			LoadFighter(team, &object[i]);
+			break;
+		}
+		case 15:
+		{
+			LoadFighter(team, &object[i]);
+			break;
+		}
+		case 16:
+		{
+			LoadFrigate(team, &object[i]);
+			break;
+		}
+		case 17:
+		{
+			LoadDestroyer(team, &object[i]);
+			break;
+		}
+		}
+
+		//object[i].mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), mesh);
+		//AllocateBuffer(&object[i], texture);
+
 	}
 }
 
-void GPU::LoadobjAsset(OBJECT * object, char * mesh, wchar_t * texture)
+void GPU::LoadTitan(unsigned int team, OBJECT * object)
+{
+	object->mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), "talon.obj");
+	AllocateBuffer(object, L"talon.dds");
+	switch (team)
+	{
+	case 1:
+	{
+		break;
+	}
+	case 2:
+	{
+
+		break;
+	}
+	}
+}
+
+void GPU::LoadBattleship(unsigned int team, OBJECT * object)
+{
+	object->mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), "talon.obj");
+	AllocateBuffer(object, L"talon.dds");
+
+}
+
+void GPU::LoadCruiser(unsigned int team, OBJECT * object)
+{
+	object->mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), "talon.obj");
+	AllocateBuffer(object, L"talon.dds");
+
+}
+
+void GPU::LoadFrigate(unsigned int team, OBJECT * object)
+{
+	object->mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), "talon.obj");
+	AllocateBuffer(object, L"talon.dds");
+
+}
+
+void GPU::LoadDestroyer(unsigned int team, OBJECT * object)
+{
+	object->mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), "talon.obj");
+	AllocateBuffer(object, L"talon.dds");
+
+}
+
+void GPU::LoadFighter(unsigned int team, OBJECT * object)
+{
+	object->mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), "talon.obj");
+	AllocateBuffer(object, L"talon.dds");
+
+}
+
+void GPU::InitalizeobjAsset(OBJECT * object, char * mesh, wchar_t * texture)
 {
 	object->mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), mesh);
 	XMStoreFloat4x4(&object->mesh.send_to_ram2.modelPos, XMMatrixTranspose(XMMatrixIdentity()));
@@ -839,7 +1015,7 @@ void GPU::LoadobjAsset(OBJECT * object, char * mesh, wchar_t * texture)
 
 }
 
-void GPU::LoadQuad(OBJECT * object, wchar_t * texture)
+void GPU::InitalizeQuad(OBJECT * object, wchar_t * texture)
 {
 
 	object->mesh.inittridebug(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), quad.groundPlane, quad.vertcount, quad.groundPlaneindex, quad.indexcount);

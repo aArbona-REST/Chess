@@ -19,13 +19,13 @@ extern int BACKBUFFER_HEIGHT;
 
 class GAME
 {
-	enum TEAMLIST	{ONE = 1, TWO};
 	unsigned int teamcount;
 	unsigned int presentteamturn;
 
 	GPU * gpu;
 
 public:
+	enum TEAMLIST	{ONE = 1, TWO};
 	GAME(GPU * gpu_handle);
 	~GAME();
 	void GAME::Run(XTime &T);

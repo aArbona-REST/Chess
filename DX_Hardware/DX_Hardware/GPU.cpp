@@ -118,6 +118,7 @@ GPU::GPU(HWND &window)
 #pragma endregion
 
 #pragma region load assets
+	bool b_w = true;
 	for (size_t r = 0; r < row; r++)
 	{
 		for (size_t d = 0; d < depth; d++)
@@ -128,8 +129,13 @@ GPU::GPU(HWND &window)
 			quadsmap[r][d].mesh.send_to_ram2.modelPos._44 = map[r][d].position.w;
 			quadsmap[r][d].positionindex[0] = (unsigned int)r;
 			quadsmap[r][d].positionindex[1] = (unsigned int)d;
-			InitalizeQuad(&quadsmap[r][d], L"white.dds");
+			if (b_w)
+				InitalizeQuad(&quadsmap[r][d], L"black.dds");
+			else
+				InitalizeQuad(&quadsmap[r][d], L"white.dds");
+			b_w = !b_w;
 		}
+		b_w = !b_w;
 	}
 	InitalizeQuad(&billboard, L"white.dds");
 

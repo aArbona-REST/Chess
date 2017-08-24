@@ -128,11 +128,10 @@ GPU::GPU(HWND &window)
 			quadsmap[r][d].mesh.send_to_ram2.modelPos._44 = map[r][d].position.w;
 			quadsmap[r][d].positionindex[0] = (unsigned int)r;
 			quadsmap[r][d].positionindex[1] = (unsigned int)d;
-			//replace this testcube.dds with one that is easy on the eyes. (Eg. all white)
-			InitalizeQuad(&quadsmap[r][d], L"TestCube.dds");
+			InitalizeQuad(&quadsmap[r][d], L"white.dds");
 		}
 	}
-	InitalizeQuad(&billboard, L"TestCube.dds");
+	InitalizeQuad(&billboard, L"white.dds");
 
 	InitalizePlayerAssets(1, teamone, "talon.obj", L"talon.dds");
 	InitalizePlayerAssets(2, teamtwo, "talon.obj", L"gladiator.dds");
@@ -852,6 +851,7 @@ void GPU::InitalizePlayerAssets(unsigned int team, OBJECT * object, char * mesh,
 			init_row += 1;
 			init_depth = 1;
 		}
+
 		XMStoreFloat4x4(&object[i].mesh.send_to_ram2.modelPos, XMMatrixTranspose(XMMatrixIdentity()));
 
 		switch (i)

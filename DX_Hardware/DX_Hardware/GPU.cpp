@@ -139,8 +139,8 @@ GPU::GPU(HWND &window)
 	}
 	InitalizeQuad(&billboard, L"white.dds");
 
-	InitalizePlayerAssets(1, teamone, "talon.obj", L"talon.dds");
-	InitalizePlayerAssets(2, teamtwo, "talon.obj", L"gladiator.dds");
+	InitalizePlayerAssets(1, teamone, "Fighter_obj.obj", L"Fighter_Base.dds");
+	InitalizePlayerAssets(2, teamtwo, "Frigate_obj.obj", L"Frigate_Base.dds");
 	InitalizeobjAsset(&selectedobjecticon, "sphere.obj", L"talon.dds");
 #pragma endregion
 
@@ -702,9 +702,19 @@ void GPU::Render(OBJECT * object, unsigned int count)
 	{
 		if (!object[i].alive)
 			continue;
-		object[i].mesh.send_to_ram2.modelPos._14 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.x;
-		object[i].mesh.send_to_ram2.modelPos._24 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.y;
-		object[i].mesh.send_to_ram2.modelPos._34 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.z;
+		if (object->ship)
+		{
+			object[i].mesh.send_to_ram2.modelPos._14 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.x;
+			object[i].mesh.send_to_ram2.modelPos._24 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.y;
+			object[i].mesh.send_to_ram2.modelPos._34 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.z;
+			object[i].mesh.send_to_ram2.modelPos._24 += 0.5f;
+		}
+		else
+		{
+			object[i].mesh.send_to_ram2.modelPos._14 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.x;
+			object[i].mesh.send_to_ram2.modelPos._24 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.y;
+			object[i].mesh.send_to_ram2.modelPos._34 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.z;
+		}
 		ZeroMemory(&mapResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 		context->Map(object[i].mesh.constbuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapResource);
 		memcpy(mapResource.pData, &object[i].mesh.send_to_ram2, sizeof(ANIMATION_VRAM));
@@ -859,8 +869,8 @@ void GPU::InitalizePlayerAssets(unsigned int team, OBJECT * object, char * mesh,
 		}
 
 		XMStoreFloat4x4(&object[i].mesh.send_to_ram2.modelPos, XMMatrixTranspose(XMMatrixIdentity()));
-
-		switch (i)
+		object[i].ship = true;
+		/*switch (i)
 		{
 		case 0:
 		{
@@ -952,13 +962,15 @@ void GPU::InitalizePlayerAssets(unsigned int team, OBJECT * object, char * mesh,
 			LoadDestroyer(team, &object[i]);
 			break;
 		}
-		}
+		}*/
 
-		//object[i].mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), mesh);
-		//AllocateBuffer(&object[i], texture);
+		object[i].mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), mesh);
+		AllocateBuffer(&object[i], texture);
 
 	}
 }
+
+#pragma region load ship functions
 
 void GPU::LoadTitan(unsigned int team, OBJECT * object)
 {
@@ -1012,6 +1024,8 @@ void GPU::LoadFighter(unsigned int team, OBJECT * object)
 	AllocateBuffer(object, L"talon.dds");
 
 }
+
+#pragma endregion
 
 void GPU::InitalizeobjAsset(OBJECT * object, char * mesh, wchar_t * texture)
 {

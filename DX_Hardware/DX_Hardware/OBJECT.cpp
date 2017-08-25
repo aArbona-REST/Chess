@@ -6,6 +6,9 @@ OBJECT::OBJECT()
 {
 	positionindex[0] = 0;
 	positionindex[1] = 0;
+	shipmoveheading = 0;
+	shipmoverange = 0;
+	shipmovecount = 0;
 	alive = true;
 	ship = false;
 }

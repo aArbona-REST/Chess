@@ -139,8 +139,8 @@ GPU::GPU(HWND &window)
 	}
 	InitalizeQuad(&billboard, L"white.dds");
 
-	InitalizePlayerAssets(1, teamone, "Fighter_obj.obj", L"Fighter_Base.dds");
-	InitalizePlayerAssets(2, teamtwo, "Frigate_obj.obj", L"Frigate_Base.dds");
+	InitalizePlayerShips(1, teamone, "Fighter_obj.obj", L"Fighter_Base.dds");
+	InitalizePlayerShips(2, teamtwo, "Frigate_obj.obj", L"Frigate_Base.dds");
 	InitalizeobjAsset(&selectedobjecticon, "sphere.obj", L"talon.dds");
 #pragma endregion
 
@@ -839,7 +839,7 @@ void GPU::CreateConstantBuffer(void * data, unsigned int size, ID3D11Buffer * bu
 
 }
 
-void GPU::InitalizePlayerAssets(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture)
+void GPU::InitalizePlayerShips(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture)
 {
 	unsigned int init_row = 0;
 	unsigned int init_depth = 0;
@@ -862,7 +862,8 @@ void GPU::InitalizePlayerAssets(unsigned int team, OBJECT * object, char * mesh,
 		object[i].positionindex[0] = init_row;
 		object[i].positionindex[1] = init_depth;
 		init_depth += 1;
-		if (init_depth == 7)
+		//if (init_depth == 7)//modifies to reduce player ships to test a full runthough quicker
+		if (init_depth == 3)
 		{
 			init_row += 1;
 			init_depth = 1;
@@ -870,104 +871,143 @@ void GPU::InitalizePlayerAssets(unsigned int team, OBJECT * object, char * mesh,
 
 		XMStoreFloat4x4(&object[i].mesh.send_to_ram2.modelPos, XMMatrixTranspose(XMMatrixIdentity()));
 		object[i].ship = true;
-		/*switch (i)
+		switch (i)
 		{
-		case 0:
+		case 0://fighter
 		{
-			LoadDestroyer(team, &object[i]);
-			break;
-		}
-		case 1:
-		{
-			LoadFrigate(team, &object[i]);
-			break;
-		}
-		case 2:
-		{
+			//LoadDestroyer(team, &object[i]);
 			LoadFighter(team, &object[i]);
-			break;
-		}
-		case 3:
-		{
-			LoadFighter(team, &object[i]);
-			break;
-		}
-		case 4:
-		{
-			LoadFrigate(team, &object[i]);
-			break;
-		}
-		case 5:
-		{
-			LoadDestroyer(team, &object[i]);
-			break;
-		}
-		case 6:
-		{
-			LoadCruiser(team, &object[i]);
-			break;
-		}
-		case 7:
-		{
-			LoadBattleship(team, &object[i]);
-			break;
-		}
-		case 8:
-		{
-			LoadTitan(team, &object[i]);
-			break;
-		}
-		case 9:
-		{
-			LoadTitan(team, &object[i]);
-			break;
-		}
-		case 10:
-		{
-			LoadBattleship(team, &object[i]);
-			break;
-		}
-		case 11:
-		{
-			LoadCruiser(team, &object[i]);
-			break;
-		}
-		case 12:
-		{
-			LoadDestroyer(team, &object[i]);
-			break;
-		}
-		case 13:
-		{
-			LoadFrigate(team, &object[i]);
-			break;
-		}
-		case 14:
-		{
-			LoadFighter(team, &object[i]);
-			break;
-		}
-		case 15:
-		{
-			LoadFighter(team, &object[i]);
-			break;
-		}
-		case 16:
-		{
-			LoadFrigate(team, &object[i]);
-			break;
-		}
-		case 17:
-		{
-			LoadDestroyer(team, &object[i]);
-			break;
-		}
-		}*/
 
-		object[i].mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), mesh);
-		AllocateBuffer(&object[i], texture);
+			break;
+		}
+		case 1://fighter
+		{
+			//LoadFrigate(team, &object[i]);
+			LoadFighter(team, &object[i]);
+
+			break;
+		}
+		case 2://fighter
+		{
+			//LoadFighter(team, &object[i]);
+			LoadFrigate(team, &object[i]);
+			break;
+		}
+		case 3://fighter
+		{
+			//LoadFighter(team, &object[i]);
+			LoadFrigate(team, &object[i]);
+			break;
+		}
+		case 4://fighter
+		{
+			//LoadFrigate(team, &object[i]);
+			LoadFighter(team, &object[i]);
+
+			break;
+		}
+		case 5://fighter
+		{
+			//LoadDestroyer(team, &object[i]);
+			LoadFighter(team, &object[i]);
+			break;
+		}
+		case 6://frigate
+		{
+			//LoadCruiser(team, &object[i]);
+			LoadFrigate(team, &object[i]);
+			break;
+		}
+		case 7://frigate
+		{
+			//LoadBattleship(team, &object[i]);
+			LoadFrigate(team, &object[i]);
+			break;
+		}
+		case 8://frigate
+		{
+			//LoadTitan(team, &object[i]);
+			LoadFrigate(team, &object[i]);
+			break;
+		}
+		case 9://frigate
+		{
+			//LoadTitan(team, &object[i]);
+			LoadFrigate(team, &object[i]);
+			break;
+		}
+		case 10://frigate
+		{
+			//LoadBattleship(team, &object[i]);
+			LoadFrigate(team, &object[i]);
+			break;
+		}
+		case 11://frigate
+		{
+			//LoadCruiser(team, &object[i]);
+			LoadFrigate(team, &object[i]);
+			break;
+		}
+		case 12://fighter
+		{
+			//LoadDestroyer(team, &object[i]);
+			LoadFighter(team, &object[i]);
+			break;
+		}
+		case 13://fighter
+		{
+			//LoadFrigate(team, &object[i]);
+			LoadFighter(team, &object[i]);
+			break;
+		}
+		case 14://fighter
+		{
+			LoadFighter(team, &object[i]);
+			break;
+		}
+		case 15://fighter
+		{
+			LoadFighter(team, &object[i]);
+			break;
+		}
+		case 16://fighter
+		{
+			//LoadFrigate(team, &object[i]);
+			LoadFighter(team, &object[i]);
+			break;
+		}
+		case 17://fighter
+		{
+			//LoadDestroyer(team, &object[i]);
+			LoadFighter(team, &object[i]);
+			break;
+		}
+		}
+
+		//object[i].mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), mesh);
+		//AllocateBuffer(&object[i], texture);
 
 	}
+}
+
+void GPU::LoadFighter(unsigned int team, OBJECT * object)
+{
+	//TODO: make teams have different Base color
+	object->mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), "Fighter_obj.obj");
+	object->shipmoveheading = OBJECT::ANGLE;
+	object->shipmoverange = OBJECT::THREE;
+	AllocateBuffer(object, L"Fighter_Base.dds");
+
+}
+
+void GPU::LoadFrigate(unsigned int team, OBJECT * object)
+{
+	//TODO: make teams have different Base color
+	object->mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), "Frigate_obj.obj");
+	object->shipmoveheading = OBJECT::FORWARD;
+	object->shipmoverange = OBJECT::TWO;
+	AllocateBuffer(object, L"Frigate_Base.dds");
+
 }
 
 #pragma region load ship functions
@@ -976,18 +1016,6 @@ void GPU::LoadTitan(unsigned int team, OBJECT * object)
 {
 	object->mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), "talon.obj");
 	AllocateBuffer(object, L"talon.dds");
-	switch (team)
-	{
-	case 1:
-	{
-		break;
-	}
-	case 2:
-	{
-
-		break;
-	}
-	}
 }
 
 void GPU::LoadBattleship(unsigned int team, OBJECT * object)
@@ -1004,21 +1032,7 @@ void GPU::LoadCruiser(unsigned int team, OBJECT * object)
 
 }
 
-void GPU::LoadFrigate(unsigned int team, OBJECT * object)
-{
-	object->mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), "talon.obj");
-	AllocateBuffer(object, L"talon.dds");
-
-}
-
 void GPU::LoadDestroyer(unsigned int team, OBJECT * object)
-{
-	object->mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), "talon.obj");
-	AllocateBuffer(object, L"talon.dds");
-
-}
-
-void GPU::LoadFighter(unsigned int team, OBJECT * object)
 {
 	object->mesh.initobj(BasicVertexShader, sizeof(BasicVertexShader), BasicPixelShader, sizeof(BasicPixelShader), "talon.obj");
 	AllocateBuffer(object, L"talon.dds");

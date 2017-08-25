@@ -29,7 +29,7 @@ public:
 	void DrawToScreen();
 	bool ShutDown();
 	void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int enemyteam);
-	void GPU::InitalizePlayerAssets(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture);
+	void GPU::InitalizePlayerShips(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture);
 	void GPU::InitalizeobjAsset(OBJECT * object, char * mesh, wchar_t * texture);
 	void GPU::InitalizeQuad(OBJECT * object, wchar_t * texture);
 	void GPU::AllocateBuffer(OBJECT * object, wchar_t * texture);
@@ -95,9 +95,11 @@ public:
 	int teamtwocount = 18;
 private:	
 	OBJECT selectedobjecticon;
-	unsigned int teamcapacity = 18;
-	unsigned int piececount = 18;
-
+	//modifies to reduce player ships to test a full runthough quicker
+	//unsigned int teamcapacity = 18;
+	//unsigned int piececount = 18;
+	unsigned int teamcapacity = 6;
+	unsigned int piececount = 6;
 	D3D11_BUFFER_DESC bufferdescription;
 	D3D11_SUBRESOURCE_DATA InitData;
 

@@ -89,10 +89,14 @@ private:
 	bool pieceselected = false;
 public:
 	bool turnended = false;
-	OBJECT teamone[18];
-	OBJECT teamtwo[18];
-	int teamonecount = 18;
-	int teamtwocount = 18;
+	//OBJECT teamone[18];
+	//OBJECT teamtwo[18];
+	//int teamonecount = 18;
+	//int teamtwocount = 18;
+	OBJECT teamone[6];
+	OBJECT teamtwo[6];
+	int teamonecount = 6;
+	int teamtwocount = 6;
 private:	
 	OBJECT selectedobjecticon;
 	//modifies to reduce player ships to test a full runthough quicker

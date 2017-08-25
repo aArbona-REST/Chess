@@ -190,290 +190,200 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 		save.SaveToFile(camera);
 		input.buttonbuffer[VK_END] = true;
 	}
-	if (!input.buttons[VK_RETURN])
-		input.buttonbuffer[VK_RETURN] = false;
-	if (input.buttonbuffer[VK_RETURN] == false && input.buttons[VK_RETURN])
-	{
-		unsigned int row = selectedobjecticon.positionindex[0];
-		unsigned int depth = selectedobjecticon.positionindex[1];
-		if (map[row][depth].positionstatus == playerteam)
-		{
-			pieceselected = !pieceselected;
-			if (pieceselected)
-				selectedobject = map[row][depth].occupieindex;
-			else
-				selectedobject = -1;
-		}
-		input.buttonbuffer[VK_RETURN] = true;
-	}
 
-	//TODO: add a switch
-	//switch used for reading selected piece and
-	//moving the piece where it is allowed to move according to the game piece rules
+	if (playerteam == 1)
+	{
+
+#pragma region enter
+
+		if (!input.buttons[VK_RETURN])
+			input.buttonbuffer[VK_RETURN] = false;
+		if (input.buttonbuffer[VK_RETURN] == false && input.buttons[VK_RETURN])
+		{
+			unsigned int row = selectedobjecticon.positionindex[0];
+			unsigned int depth = selectedobjecticon.positionindex[1];
+			if (map[row][depth].positionstatus == 1)
+			{
+				pieceselected = !pieceselected;
+				if (pieceselected)
+					selectedobject = map[row][depth].occupieindex;
+				else
+				{
+					if (teamone[selectedobject].shipmovecount)
+					{
+						teamone[selectedobject].shipselectedheading = OBJECT::NONE;
+						teamone[selectedobject].shipmovecount = 0;
+						turnended = true;
+					}
+					selectedobject = -1;
+				}
+			}
+			input.buttonbuffer[VK_RETURN] = true;
+		}
+
+#pragma endregion
 
 #pragma region left
-	if (!input.buttons[VK_LEFT])
-		input.buttonbuffer[VK_LEFT] = false;
-	if (input.buttonbuffer[VK_LEFT] == false && input.buttons[VK_LEFT])
-	{
-		unsigned int row = selectedobjecticon.positionindex[0];
-		unsigned int depth = selectedobjecticon.positionindex[1];
-		if (!pieceselected)
+		if (!input.buttons[VK_NUMPAD4])
+			input.buttonbuffer[VK_NUMPAD4] = false;
+		if (input.buttonbuffer[VK_NUMPAD4] == false && input.buttons[VK_NUMPAD4])
 		{
-			selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
-			selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
-		}
-		else
-		{
-			switch (map[row][depth].left->positionstatus)
-			{
-			case 0:
+			unsigned int row = selectedobjecticon.positionindex[0];
+			unsigned int depth = selectedobjecticon.positionindex[1];
+			if (!pieceselected && map[row][depth].left != nullptr)//move the cursor alone
 			{
 				selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
 				selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
-				map[row][depth].positionstatus = 0;
-				map[row][depth].left->positionstatus = playerteam;
-				unsigned int objectindex = map[row][depth].occupieindex;
-				map[row][depth].occupieindex = -1;
-				map[row][depth].left->occupieindex = objectindex;
-				if (playerteam == 1)
-				{
-					teamone[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
-					teamone[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
-				}
-				else if (playerteam == 2)
-				{
-					teamtwo[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
-					teamtwo[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
-				}
-				pieceselected = !pieceselected;
-				selectedobject = -1;
-				turnended = true;
-				break;
 			}
-			case 1:
+			else if (teamone[selectedobject].shipselectedheading == OBJECT::NONE || teamone[selectedobject].shipselectedheading == OBJECT::LEFT)//move the cursor and selected ship
 			{
-
-				switch (playerteam)
+				if (map[row][depth].left != nullptr)
 				{
-				case 2:
-				{
-					teamone[map[row][depth].left->occupieindex].alive = false;
 
-					selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
-					selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
-					map[row][depth].positionstatus = 0;
-					map[row][depth].left->positionstatus = playerteam;
-					unsigned int objectindex = map[row][depth].occupieindex;
-					map[row][depth].occupieindex = -1;
-					map[row][depth].left->occupieindex = objectindex;
+					switch (map[row][depth].left->positionstatus)
+					{
+					case 0:
+					{
+						selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].left->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].left->occupieindex = objectindex;
+						teamone[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
+						teamone[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
+						teamone[selectedobject].shipselectedheading = OBJECT::LEFT;
+						teamone[selectedobject].shipmovecount++;
+						if (teamone[selectedobject].shipmovecount == teamone[selectedobject].shipmoverange)
+						{
+							teamone[selectedobject].shipselectedheading = OBJECT::NONE;
+							teamone[selectedobject].shipmovecount = 0;
+							pieceselected = !pieceselected;
+							selectedobject = -1;
+							turnended = true;
+						}
+						break;
+					}
+					case 2:
+					{
 
-
-					teamtwo[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
-					teamtwo[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
-					pieceselected = !pieceselected;
-					selectedobject = -1;
-					turnended = true;
-					teamonecount--;
-					break;
+						teamtwo[map[row][depth].left->occupieindex].alive = false;
+						selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].left->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].left->occupieindex = objectindex;
+						teamone[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
+						teamone[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
+						teamone[selectedobject].shipselectedheading = OBJECT::NONE;
+						teamone[selectedobject].shipmovecount = 0;
+						pieceselected = !pieceselected;
+						selectedobject = -1;
+						turnended = true;
+						teamtwocount--;
+						break;
+					}
+					}
 				}
-				}
-				break;
 			}
-			case 2:
-			{
-				switch (playerteam)
-				{
-				case 1:
-				{
-					teamtwo[map[row][depth].left->occupieindex].alive = false;
-
-					selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
-					selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
-					map[row][depth].positionstatus = 0;
-					map[row][depth].left->positionstatus = playerteam;
-					unsigned int objectindex = map[row][depth].occupieindex;
-					map[row][depth].occupieindex = -1;
-					map[row][depth].left->occupieindex = objectindex;
-
-
-					teamone[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
-					teamone[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
-					pieceselected = !pieceselected;
-					selectedobject = -1;
-					turnended = true;
-					teamtwocount--;
-					break;
-				}
-				}
-				break;
-			}
-			}
+			input.buttonbuffer[VK_NUMPAD4] = true;
 		}
-		input.buttonbuffer[VK_LEFT] = true;
-	}
 #pragma endregion
 
 #pragma region right
 
-	if (!input.buttons[VK_RIGHT])
-		input.buttonbuffer[VK_RIGHT] = false;
-	if (input.buttonbuffer[VK_RIGHT] == false && input.buttons[VK_RIGHT])
-	{
-		unsigned int row = selectedobjecticon.positionindex[0];
-		unsigned int depth = selectedobjecticon.positionindex[1];
-		if (!pieceselected)
+		if (!input.buttons[VK_NUMPAD6])
+			input.buttonbuffer[VK_NUMPAD6] = false;
+		if (input.buttonbuffer[VK_NUMPAD6] == false && input.buttons[VK_NUMPAD6])
 		{
-			selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
-			selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
-		}
-		else
-		{
-			switch (map[row][depth].right->positionstatus)
-			{
-			case 0:
+			unsigned int row = selectedobjecticon.positionindex[0];
+			unsigned int depth = selectedobjecticon.positionindex[1];
+			if (!pieceselected && map[row][depth].right != nullptr)//move the cursor alone
 			{
 				selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
 				selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
-				map[row][depth].positionstatus = 0;
-				map[row][depth].right->positionstatus = playerteam;
-				unsigned int objectindex = map[row][depth].occupieindex;
-				map[row][depth].occupieindex = -1;
-				map[row][depth].right->occupieindex = objectindex;
-				if (playerteam == 1)
-				{
-					teamone[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
-					teamone[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
-				}
-				else if (playerteam == 2)
-				{
-					teamtwo[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
-					teamtwo[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
-				}
-				pieceselected = !pieceselected;
-				selectedobject = -1;
-				turnended = true;
-				break;
 			}
-			case 1:
+			else if (teamone[selectedobject].shipselectedheading == OBJECT::NONE || teamone[selectedobject].shipselectedheading == OBJECT::RIGHT)//move the cursor and selected ship
 			{
-
-				switch (playerteam)
+				if (map[row][depth].right != nullptr)
 				{
-				case 2:
-				{
-					teamone[map[row][depth].right->occupieindex].alive = false;
 
-					selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
-					selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
-					map[row][depth].positionstatus = 0;
-					map[row][depth].right->positionstatus = playerteam;
-					unsigned int objectindex = map[row][depth].occupieindex;
-					map[row][depth].occupieindex = -1;
-					map[row][depth].right->occupieindex = objectindex;
-
-
-					teamtwo[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
-					teamtwo[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
-					pieceselected = !pieceselected;
-					selectedobject = -1;
-					turnended = true;
-					teamonecount--;
-					break;
+					switch (map[row][depth].right->positionstatus)
+					{
+					case 0:
+					{
+						selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].right->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].right->occupieindex = objectindex;
+						teamone[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
+						teamone[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
+						teamone[selectedobject].shipselectedheading = OBJECT::RIGHT;
+						teamone[selectedobject].shipmovecount++;
+						if (teamone[selectedobject].shipmovecount == teamone[selectedobject].shipmoverange)
+						{
+							teamone[selectedobject].shipselectedheading = OBJECT::NONE;
+							teamone[selectedobject].shipmovecount = 0;
+							pieceselected = !pieceselected;
+							selectedobject = -1;
+							turnended = true;
+						}
+						break;
+					}
+					case 2:
+					{
+						teamtwo[map[row][depth].right->occupieindex].alive = false;
+						selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].right->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].right->occupieindex = objectindex;
+						teamone[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
+						teamone[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
+						teamone[selectedobject].shipselectedheading = OBJECT::NONE;
+						teamone[selectedobject].shipmovecount = 0;
+						pieceselected = !pieceselected;
+						selectedobject = -1;
+						turnended = true;
+						teamtwocount--;
+						break;
+					}
+					}
 				}
-				}
-				break;
 			}
-			case 2:
-			{
-				switch (playerteam)
-				{
-				case 1:
-				{
-					teamtwo[map[row][depth].right->occupieindex].alive = false;
-
-					selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
-					selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
-					map[row][depth].positionstatus = 0;
-					map[row][depth].right->positionstatus = playerteam;
-					unsigned int objectindex = map[row][depth].occupieindex;
-					map[row][depth].occupieindex = -1;
-					map[row][depth].right->occupieindex = objectindex;
-
-
-					teamone[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
-					teamone[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
-					pieceselected = !pieceselected;
-					selectedobject = -1;
-					turnended = true;
-					teamtwocount--;
-					break;
-				}
-				}
-				break;
-			}
-			}
+			input.buttonbuffer[VK_NUMPAD6] = true;
 		}
-		input.buttonbuffer[VK_RIGHT] = true;
-	}
 #pragma endregion
 
 #pragma region down
-	if (!input.buttons[VK_DOWN])
-		input.buttonbuffer[VK_DOWN] = false;
-	if (input.buttonbuffer[VK_DOWN] == false && input.buttons[VK_DOWN])
-	{
-		unsigned int row = selectedobjecticon.positionindex[0];
-		unsigned int depth = selectedobjecticon.positionindex[1];
-		if (!pieceselected && map[row][depth].front != nullptr)
+		if (!input.buttons[VK_NUMPAD2])
+			input.buttonbuffer[VK_NUMPAD2] = false;
+		if (input.buttonbuffer[VK_NUMPAD2] == false && input.buttons[VK_NUMPAD2])
 		{
-			selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
-			selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
-		}
-		else
-		{
-			if (map[row][depth].front != nullptr)
+			unsigned int row = selectedobjecticon.positionindex[0];
+			unsigned int depth = selectedobjecticon.positionindex[1];
+			if (!pieceselected && map[row][depth].front != nullptr)//move the cursor alone
 			{
+				selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
+				selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
+			}
+			else if (teamone[selectedobject].shipselectedheading == OBJECT::NONE || teamone[selectedobject].shipselectedheading == OBJECT::DOWN)//move the cursor and selected ship
+			{
+				if (map[row][depth].front != nullptr)
+				{
 
-				switch (map[row][depth].front->positionstatus)
-				{
-				case 0:
-				{
-					selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
-					selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
-					map[row][depth].positionstatus = 0;
-					map[row][depth].front->positionstatus = playerteam;
-					unsigned int objectindex = map[row][depth].occupieindex;
-					map[row][depth].occupieindex = -1;
-					map[row][depth].front->occupieindex = objectindex;
-					if (playerteam == 1)
+					switch (map[row][depth].front->positionstatus)
 					{
-						teamone[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
-						teamone[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
-					}
-					else if (playerteam == 2)
+					case 0:
 					{
-						teamtwo[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
-						teamtwo[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
-					}
-					//TODO: the pieceselected, selectedobject, and turnended
-					//some how make them toggle only when the player has moved
-					//the selected piece one space at least, or to the pieces max range
-					pieceselected = !pieceselected;
-					selectedobject = -1;
-					turnended = true;
-					//
-					//TODO: sound code(low priority)
-					break;
-				}
-				case 1:
-				{
-					switch (playerteam)
-					{
-					case 2:
-					{
-						teamone[map[row][depth].front->occupieindex].alive = false;
-
 						selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
 						selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
 						map[row][depth].positionstatus = 0;
@@ -481,26 +391,23 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 						unsigned int objectindex = map[row][depth].occupieindex;
 						map[row][depth].occupieindex = -1;
 						map[row][depth].front->occupieindex = objectindex;
-
-
-						teamtwo[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
-						teamtwo[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
-						pieceselected = !pieceselected;
-						selectedobject = -1;
-						turnended = true;
-						teamonecount--;
+						teamone[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
+						teamone[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
+						teamone[selectedobject].shipselectedheading = OBJECT::DOWN;
+						teamone[selectedobject].shipmovecount++;
+						if (teamone[selectedobject].shipmovecount == teamone[selectedobject].shipmoverange)
+						{
+							teamone[selectedobject].shipselectedheading = OBJECT::NONE;
+							teamone[selectedobject].shipmovecount = 0;
+							pieceselected = !pieceselected;
+							selectedobject = -1;
+							turnended = true;
+						}
 						break;
 					}
-					}
-					break;
-				}
-				case 2:
-				{
+					case 2:
+					{
 
-					switch (playerteam)
-					{
-					case 1:
-					{
 						teamtwo[map[row][depth].front->occupieindex].alive = false;
 
 						selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
@@ -510,10 +417,10 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 						unsigned int objectindex = map[row][depth].occupieindex;
 						map[row][depth].occupieindex = -1;
 						map[row][depth].front->occupieindex = objectindex;
-
-
 						teamone[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
 						teamone[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
+						teamone[selectedobject].shipselectedheading = OBJECT::NONE;
+						teamone[selectedobject].shipmovecount = 0;
 						pieceselected = !pieceselected;
 						selectedobject = -1;
 						turnended = true;
@@ -521,65 +428,33 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 						break;
 					}
 					}
-					break;
-				}
 				}
 			}
+			input.buttonbuffer[VK_NUMPAD2] = true;
 		}
-		input.buttonbuffer[VK_DOWN] = true;
-	}
 #pragma endregion
 
 #pragma region up
-	if (!input.buttons[VK_UP])
-		input.buttonbuffer[VK_UP] = false;
-	if (input.buttonbuffer[VK_UP] == false && input.buttons[VK_UP])
-	{
-		unsigned int row = selectedobjecticon.positionindex[0];
-		unsigned int depth = selectedobjecticon.positionindex[1];
-		if (!pieceselected && map[row][depth].back != nullptr)
+		if (!input.buttons[VK_NUMPAD8])
+			input.buttonbuffer[VK_NUMPAD8] = false;
+		if (input.buttonbuffer[VK_NUMPAD8] == false && input.buttons[VK_NUMPAD8])
 		{
-			selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
-			selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
-		}
-		else
-		{
-			if (map[row][depth].back != nullptr)
+			unsigned int row = selectedobjecticon.positionindex[0];
+			unsigned int depth = selectedobjecticon.positionindex[1];
+			if (!pieceselected && map[row][depth].back != nullptr)//move the cursor alone
 			{
-				switch (map[row][depth].back->positionstatus)
+				selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
+				selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
+			}
+			else if (teamone[selectedobject].shipselectedheading == OBJECT::NONE || teamone[selectedobject].shipselectedheading == OBJECT::UP)//move the cursor and selected ship
+			{
+				if (map[row][depth].back != nullptr)
 				{
-				case 0:
-				{
-					selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
-					selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
-					map[row][depth].positionstatus = 0;
-					map[row][depth].back->positionstatus = playerteam;
-					unsigned int objectindex = map[row][depth].occupieindex;
-					map[row][depth].occupieindex = -1;
-					map[row][depth].back->occupieindex = objectindex;
-					if (playerteam == 1)
-					{
-						teamone[selectedobject].positionindex[0] = map[row][depth].back->positionindex[0];
-						teamone[selectedobject].positionindex[1] = map[row][depth].back->positionindex[1];
-					}
-					else if (playerteam == 2)
-					{
-						teamtwo[selectedobject].positionindex[0] = map[row][depth].back->positionindex[0];
-						teamtwo[selectedobject].positionindex[1] = map[row][depth].back->positionindex[1];
-					}
-					pieceselected = !pieceselected;
-					selectedobject = -1;
-					turnended = true;
-					break;
-				}
-				case 1:
-				{
-					switch (playerteam)
-					{
-					case 2:
-					{
-						teamone[map[row][depth].back->occupieindex].alive = false;
 
+					switch (map[row][depth].back->positionstatus)
+					{
+					case 0:
+					{
 						selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
 						selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
 						map[row][depth].positionstatus = 0;
@@ -587,27 +462,24 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 						unsigned int objectindex = map[row][depth].occupieindex;
 						map[row][depth].occupieindex = -1;
 						map[row][depth].back->occupieindex = objectindex;
-
-
-						teamtwo[selectedobject].positionindex[0] = map[row][depth].back->positionindex[0];
-						teamtwo[selectedobject].positionindex[1] = map[row][depth].back->positionindex[1];
-						pieceselected = !pieceselected;
-						selectedobject = -1;
-						turnended = true;
-						teamonecount--;
+						teamone[selectedobject].positionindex[0] = map[row][depth].back->positionindex[0];
+						teamone[selectedobject].positionindex[1] = map[row][depth].back->positionindex[1];
+						teamone[selectedobject].shipselectedheading = OBJECT::UP;
+						teamone[selectedobject].shipmovecount++;
+						if (teamone[selectedobject].shipmovecount == teamone[selectedobject].shipmoverange)
+						{
+							teamone[selectedobject].shipselectedheading = OBJECT::NONE;
+							teamone[selectedobject].shipmovecount = 0;
+							pieceselected = !pieceselected;
+							selectedobject = -1;
+							turnended = true;
+						}
 						break;
 					}
-					}
-					break;
-				}
-				case 2:
-				{
-					switch (playerteam)
+					case 2:
 					{
-					case 1:
-					{
-						teamtwo[map[row][depth].back->occupieindex].alive = false;
 
+						teamtwo[map[row][depth].back->occupieindex].alive = false;
 						selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
 						selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
 						map[row][depth].positionstatus = 0;
@@ -615,10 +487,10 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 						unsigned int objectindex = map[row][depth].occupieindex;
 						map[row][depth].occupieindex = -1;
 						map[row][depth].back->occupieindex = objectindex;
-
-
 						teamone[selectedobject].positionindex[0] = map[row][depth].back->positionindex[0];
 						teamone[selectedobject].positionindex[1] = map[row][depth].back->positionindex[1];
+						teamone[selectedobject].shipselectedheading = OBJECT::NONE;
+						teamone[selectedobject].shipmovecount = 0;
 						pieceselected = !pieceselected;
 						selectedobject = -1;
 						turnended = true;
@@ -626,15 +498,322 @@ void GPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int en
 						break;
 					}
 					}
-					break;
 				}
-				}
-
 			}
+			input.buttonbuffer[VK_NUMPAD8] = true;
 		}
-		input.buttonbuffer[VK_UP] = true;
-	}
 #pragma endregion
+	}
+	else//team two
+	{
+
+#pragma region enter
+		if (!input.buttons[VK_RETURN])
+			input.buttonbuffer[VK_RETURN] = false;
+		if (input.buttonbuffer[VK_RETURN] == false && input.buttons[VK_RETURN])
+		{
+			unsigned int row = selectedobjecticon.positionindex[0];
+			unsigned int depth = selectedobjecticon.positionindex[1];
+			if (map[row][depth].positionstatus == 2)
+			{
+				pieceselected = !pieceselected;
+				if (pieceselected)
+					selectedobject = map[row][depth].occupieindex;
+				else
+				{
+					if (teamtwo[selectedobject].shipmovecount)
+					{
+						teamtwo[selectedobject].shipselectedheading = OBJECT::NONE;
+						teamtwo[selectedobject].shipmovecount = 0;
+						turnended = true;
+					}
+					selectedobject = -1;
+				}
+			}
+			input.buttonbuffer[VK_RETURN] = true;
+		}
+#pragma endregion
+
+#pragma region left
+		if (!input.buttons[VK_NUMPAD4])
+			input.buttonbuffer[VK_NUMPAD4] = false;
+		if (input.buttonbuffer[VK_NUMPAD4] == false && input.buttons[VK_NUMPAD4])
+		{
+			unsigned int row = selectedobjecticon.positionindex[0];
+			unsigned int depth = selectedobjecticon.positionindex[1];
+			if (!pieceselected && map[row][depth].left != nullptr)//move the cursor alone
+			{
+				selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
+				selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
+			}
+			else if (teamtwo[selectedobject].shipselectedheading == OBJECT::NONE || teamtwo[selectedobject].shipselectedheading == OBJECT::LEFT)//move the cursor and selected ship
+			{
+				if (map[row][depth].left != nullptr)
+				{
+
+					switch (map[row][depth].left->positionstatus)
+					{
+					case 0:
+					{
+						selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].left->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].left->occupieindex = objectindex;
+						teamtwo[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
+						teamtwo[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
+						teamtwo[selectedobject].shipselectedheading = OBJECT::LEFT;
+						teamtwo[selectedobject].shipmovecount++;
+						if (teamtwo[selectedobject].shipmovecount == teamtwo[selectedobject].shipmoverange)
+						{
+							teamtwo[selectedobject].shipselectedheading = OBJECT::NONE;
+							teamtwo[selectedobject].shipmovecount = 0;
+							pieceselected = !pieceselected;
+							selectedobject = -1;
+							turnended = true;
+						}
+						break;
+					}
+					case 1:
+					{
+						teamtwo[map[row][depth].left->occupieindex].alive = false;
+						selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].left->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].left->occupieindex = objectindex;
+						teamtwo[selectedobject].positionindex[0] = map[row][depth].left->positionindex[0];
+						teamtwo[selectedobject].positionindex[1] = map[row][depth].left->positionindex[1];
+						teamtwo[selectedobject].shipselectedheading = OBJECT::NONE;
+						teamtwo[selectedobject].shipmovecount = 0;
+						pieceselected = !pieceselected;
+						selectedobject = -1;
+						turnended = true;
+						teamtwocount--;
+						break;
+					}
+					}
+				}
+			}
+			input.buttonbuffer[VK_NUMPAD4] = true;
+		}
+#pragma endregion
+
+#pragma region right
+
+		if (!input.buttons[VK_NUMPAD6])
+			input.buttonbuffer[VK_NUMPAD6] = false;
+		if (input.buttonbuffer[VK_NUMPAD6] == false && input.buttons[VK_NUMPAD6])
+		{
+			unsigned int row = selectedobjecticon.positionindex[0];
+			unsigned int depth = selectedobjecticon.positionindex[1];
+			if (!pieceselected && map[row][depth].right != nullptr)//move the cursor alone
+			{
+				selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
+				selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
+			}
+			else if (teamtwo[selectedobject].shipselectedheading == OBJECT::NONE || teamtwo[selectedobject].shipselectedheading == OBJECT::RIGHT)//move the cursor and selected ship
+			{
+				if (map[row][depth].right != nullptr)
+				{
+
+					switch (map[row][depth].right->positionstatus)
+					{
+					case 0:
+					{
+						selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].right->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].right->occupieindex = objectindex;
+						teamtwo[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
+						teamtwo[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
+						teamtwo[selectedobject].shipselectedheading = OBJECT::RIGHT;
+						teamtwo[selectedobject].shipmovecount++;
+						if (teamtwo[selectedobject].shipmovecount == teamtwo[selectedobject].shipmoverange)
+						{
+							teamtwo[selectedobject].shipselectedheading = OBJECT::NONE;
+							teamtwo[selectedobject].shipmovecount = 0;
+							pieceselected = !pieceselected;
+							selectedobject = -1;
+							turnended = true;
+						}
+						break;
+					}
+					case 1:
+					{
+						teamtwo[map[row][depth].right->occupieindex].alive = false;
+						selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].right->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].right->occupieindex = objectindex;
+						teamtwo[selectedobject].positionindex[0] = map[row][depth].right->positionindex[0];
+						teamtwo[selectedobject].positionindex[1] = map[row][depth].right->positionindex[1];
+						teamtwo[selectedobject].shipselectedheading = OBJECT::NONE;
+						teamtwo[selectedobject].shipmovecount = 0;
+						pieceselected = !pieceselected;
+						selectedobject = -1;
+						turnended = true;
+						teamtwocount--;
+						break;
+					}
+					}
+				}
+			}
+			input.buttonbuffer[VK_NUMPAD6] = true;
+		}
+#pragma endregion
+
+#pragma region down
+		if (!input.buttons[VK_NUMPAD2])
+			input.buttonbuffer[VK_NUMPAD2] = false;
+		if (input.buttonbuffer[VK_NUMPAD2] == false && input.buttons[VK_NUMPAD2])
+		{
+			unsigned int row = selectedobjecticon.positionindex[0];
+			unsigned int depth = selectedobjecticon.positionindex[1];
+			if (!pieceselected && map[row][depth].front != nullptr)//move the cursor alone
+			{
+				selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
+				selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
+			}
+			else if (teamtwo[selectedobject].shipselectedheading == OBJECT::NONE || teamtwo[selectedobject].shipselectedheading == OBJECT::DOWN)//move the cursor and selected ship
+			{
+				if (map[row][depth].front != nullptr)
+				{
+
+					switch (map[row][depth].front->positionstatus)
+					{
+					case 0:
+					{
+						selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].front->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].front->occupieindex = objectindex;
+						teamtwo[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
+						teamtwo[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
+						teamtwo[selectedobject].shipselectedheading = OBJECT::DOWN;
+						teamtwo[selectedobject].shipmovecount++;
+						if (teamtwo[selectedobject].shipmovecount == teamtwo[selectedobject].shipmoverange)
+						{
+							teamtwo[selectedobject].shipselectedheading = OBJECT::NONE;
+							teamtwo[selectedobject].shipmovecount = 0;
+							pieceselected = !pieceselected;
+							selectedobject = -1;
+							turnended = true;
+						}
+						break;
+					}
+					case 1:
+					{
+
+						teamtwo[map[row][depth].front->occupieindex].alive = false;
+
+						selectedobjecticon.positionindex[0] = map[row][depth].front->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].front->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].front->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].front->occupieindex = objectindex;
+						teamtwo[selectedobject].positionindex[0] = map[row][depth].front->positionindex[0];
+						teamtwo[selectedobject].positionindex[1] = map[row][depth].front->positionindex[1];
+						teamtwo[selectedobject].shipselectedheading = OBJECT::NONE;
+						teamtwo[selectedobject].shipmovecount = 0;
+						pieceselected = !pieceselected;
+						selectedobject = -1;
+						turnended = true;
+						teamtwocount--;
+						break;
+					}
+					}
+				}
+			}
+			input.buttonbuffer[VK_NUMPAD2] = true;
+		}
+#pragma endregion
+
+#pragma region up
+		if (!input.buttons[VK_NUMPAD8])
+			input.buttonbuffer[VK_NUMPAD8] = false;
+		if (input.buttonbuffer[VK_NUMPAD8] == false && input.buttons[VK_NUMPAD8])
+		{
+			unsigned int row = selectedobjecticon.positionindex[0];
+			unsigned int depth = selectedobjecticon.positionindex[1];
+			if (!pieceselected && map[row][depth].back != nullptr)//move the cursor alone
+			{
+				selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
+				selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
+			}
+			else if (teamtwo[selectedobject].shipselectedheading == OBJECT::NONE || teamtwo[selectedobject].shipselectedheading == OBJECT::UP)//move the cursor and selected ship
+			{
+				if (map[row][depth].back != nullptr)
+				{
+
+					switch (map[row][depth].back->positionstatus)
+					{
+					case 0:
+					{
+						selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].back->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].back->occupieindex = objectindex;
+						teamtwo[selectedobject].positionindex[0] = map[row][depth].back->positionindex[0];
+						teamtwo[selectedobject].positionindex[1] = map[row][depth].back->positionindex[1];
+						teamtwo[selectedobject].shipselectedheading = OBJECT::UP;
+						teamtwo[selectedobject].shipmovecount++;
+						if (teamtwo[selectedobject].shipmovecount == teamtwo[selectedobject].shipmoverange)
+						{
+							teamtwo[selectedobject].shipselectedheading = OBJECT::NONE;
+							teamtwo[selectedobject].shipmovecount = 0;
+							pieceselected = !pieceselected;
+							selectedobject = -1;
+							turnended = true;
+						}
+						break;
+					}
+					case 1:
+					{
+
+						teamtwo[map[row][depth].back->occupieindex].alive = false;
+						selectedobjecticon.positionindex[0] = map[row][depth].back->positionindex[0];
+						selectedobjecticon.positionindex[1] = map[row][depth].back->positionindex[1];
+						map[row][depth].positionstatus = 0;
+						map[row][depth].back->positionstatus = playerteam;
+						unsigned int objectindex = map[row][depth].occupieindex;
+						map[row][depth].occupieindex = -1;
+						map[row][depth].back->occupieindex = objectindex;
+						teamtwo[selectedobject].positionindex[0] = map[row][depth].back->positionindex[0];
+						teamtwo[selectedobject].positionindex[1] = map[row][depth].back->positionindex[1];
+						teamtwo[selectedobject].shipselectedheading = OBJECT::NONE;
+						teamtwo[selectedobject].shipmovecount = 0;
+						pieceselected = !pieceselected;
+						selectedobject = -1;
+						turnended = true;
+						teamtwocount--;
+						break;
+					}
+					}
+				}
+			}
+			input.buttonbuffer[VK_NUMPAD8] = true;
+		}
+#pragma endregion
+	}
 
 }
 
@@ -850,7 +1029,7 @@ void GPU::InitalizePlayerShips(unsigned int team, OBJECT * object, char * mesh, 
 		init_depth = 1;
 		break;
 	case 2:
-		init_row = 7;
+		init_row = 11;
 		init_depth = 1;
 		break;
 	}

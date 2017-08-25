@@ -9,6 +9,7 @@ OBJECT::OBJECT()
 	shipmoveheading = 0;
 	shipmoverange = 0;
 	shipmovecount = 0;
+	shipselectedheading = 0;
 	alive = true;
 	ship = false;
 }

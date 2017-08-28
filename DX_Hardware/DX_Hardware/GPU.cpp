@@ -31,8 +31,6 @@ GPU::GPU(HWND &window)
 	XMStoreFloat4x4(&camera, m);
 	XMStoreFloat4x4(&send_to_ram.camView, XMMatrixTranspose(XMLoadFloat4x4(&camera)));
 
-
-
 	float aspectRatio = (float)BACKBUFFER_WIDTH / (float)BACKBUFFER_HEIGHT;
 	float fovAngleY = 70.0f * XM_PI / 180.0f;
 	if (aspectRatio < 1.0f)
@@ -40,6 +38,10 @@ GPU::GPU(HWND &window)
 	fovAngleY = XMConvertToDegrees(fovAngleY);
 	XMMATRIX perspectiveMatrix = XMMatrixPerspectiveFovLH(fovAngleY, aspectRatio, 0.01f, 100000.0f);
 	XMStoreFloat4x4(&send_to_ram.camProj, XMMatrixTranspose(perspectiveMatrix));
+
+	send_to_ram.spot_light_pos = XMFLOAT4(0.0f, 10.0f, 0.0f, 0.0f);
+	send_to_ram.spot_light_dir = XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f);
+
 
 	ZeroMemory(&bufferdescription, sizeof(D3D11_BUFFER_DESC));
 	bufferdescription.Usage = D3D11_USAGE_DYNAMIC;

@@ -23,11 +23,10 @@ extern int BACKBUFFER_HEIGHT;
 class GAMEGPU
 {
 public:
-	//XTime Time;
 	GAMEGPU(HWND &window);
 	~GAMEGPU();
 	void DrawToScreen();
-	bool ShutDown();
+	void ShutDown();
 	void GAMEGPU::PlayerInput(OBJECT * objects, unsigned int playerteam);
 	void GAMEGPU::InitalizePlayerShips(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture);
 	void GAMEGPU::InitalizeobjAsset(OBJECT * object, char * mesh, wchar_t * texture);
@@ -51,7 +50,6 @@ private:
 	void GAMEGPU::Set();
 	void GAMEGPU::Clear();
 	float color[4]{ 0.2f, 0.2f, 0.5f, 0.0f };
-	HWND * window = nullptr; 
 public:
 	HRESULT							HR;
 private:
@@ -109,26 +107,26 @@ private:
 	D3D11_SUBRESOURCE_DATA InitData;
 
 public:
-	ID3D11Device *device = NULL;
-	ID3D11DeviceContext * context = NULL;
-	IDXGISwapChain *swapchain = NULL;
-	ID3D11RenderTargetView * rtv = NULL;
-	D3D11_VIEWPORT viewport;
-	ID3D11Texture2D * depthStencil = nullptr;
-	ID3D11DepthStencilView * depthStencilView = nullptr;
+	ID3D11Device *device = NULL;//delete
+	ID3D11DeviceContext * context = NULL;//delete
+	IDXGISwapChain *swapchain = NULL;//delete
+	ID3D11RenderTargetView * rtv = NULL;//delete
+	D3D11_VIEWPORT viewport;//??delete??
+	ID3D11Texture2D * depthStencil = nullptr;//delete
+	ID3D11DepthStencilView * depthStencilView = nullptr;//delete
 private:
 
-	ID3D11Buffer * groundvertbuffer = NULL;
-	ID3D11Buffer * groundindexbuffer = NULL;
+	ID3D11Buffer * groundvertbuffer = NULL;//delete
+	ID3D11Buffer * groundindexbuffer = NULL;//delete
 	unsigned int groundindexCount = 0;
 
-	ID3D11VertexShader * Gamevertexshader = NULL;
-	ID3D11PixelShader * Gamepixelshader = NULL;
+	ID3D11VertexShader * Gamevertexshader = NULL;//delete
+	ID3D11PixelShader * Gamepixelshader = NULL;//delete
 
 
 	public:
-	ID3D11InputLayout * layout = NULL;
-	ID3D11Buffer * constBuffer = NULL;
+	ID3D11InputLayout * layout = NULL;//delete
+	ID3D11Buffer * constBuffer = NULL;//delete
 	VRAM send_to_ram;
 	XMFLOAT4X4 camera;
 	private:

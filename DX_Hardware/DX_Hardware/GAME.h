@@ -27,7 +27,8 @@ class GAME
 	MENUGPU * menugpu;
 public:
 	enum TEAMLIST	{MENU, ONE, TWO};
-	GAME(MENUGPU * menugpu, GAMEGPU * gamegpu);
+	//GAME(MENUGPU * menugpu, GAMEGPU * gamegpu);
+	GAME(HWND &window);
 	~GAME();
 	void GAME::Run(XTime &T);
 };

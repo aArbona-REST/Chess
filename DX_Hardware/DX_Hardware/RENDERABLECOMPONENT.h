@@ -14,7 +14,6 @@ public:
 	void initfbx(const void * pVSShaderByteCode, const void * pPSShaderByteCode, char * FileName);
 	void inittridebug(const void * pVSShaderByteCode, size_t vssize, const void * pPSShaderByteCode, size_t pssize, SIMPLE_VERTEX * verts, unsigned int vertcount, unsigned int * indices, unsigned int indicescount);
 	void initobj(const void * pVSShaderByteCode, size_t vssize, const void * pPSShaderByteCode, size_t pssize, char * FileName);
-	void update(double dt);
 
 	//private:
 	//i should make getters and setters
@@ -31,10 +30,6 @@ public:
 	XMFLOAT4X4 InverseBindPose[64];
 	SIMPLE_VERTEX * realtimemodel = nullptr;
 	
-	//line to triangle variables
-	size_t trianglecount = 0;
-	TRIANGLE * triangles = nullptr;
-
 	bool animationpaused = false;
 	double curranimtime = 0.0;
 

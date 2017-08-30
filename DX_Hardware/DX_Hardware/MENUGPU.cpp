@@ -2,7 +2,6 @@
 
 MENUGPU::MENUGPU(HWND &window)
 {
-	this->window = &window;
 
 #pragma region swap chain device context
 	DXGI_SWAP_CHAIN_DESC scd;
@@ -10,7 +9,7 @@ MENUGPU::MENUGPU(HWND &window)
 	scd.BufferCount = 1;
 	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	scd.OutputWindow = *(this->window);
+	scd.OutputWindow = window;
 	scd.SampleDesc.Count = 1;
 	scd.Windowed = TRUE;
 	D3D11CreateDeviceAndSwapChain(0, D3D_DRIVER_TYPE_HARDWARE, 0, 0, 0, 0, D3D11_SDK_VERSION, &scd, &swapchain, &device, 0, &context);
@@ -165,6 +164,7 @@ void MENUGPU::DrawToScreen()
 	XMVECTOR billboardpos = XMLoadFloat4x4(&billboard.mesh.send_to_ram2.modelPos).r[3];
 
 	XMFLOAT4 up = XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+
 	XMVECTOR billboardup = XMLoadFloat4(&up);
 
 	XMVECTOR camerapos = XMLoadFloat4x4(&camera).r[3];
@@ -172,8 +172,6 @@ void MENUGPU::DrawToScreen()
 	XMMATRIX m = XMMatrixLookAtLH(billboardpos, billboardup, camerapos);
 
 	XMStoreFloat4x4(&billboard.mesh.send_to_ram2.modelPos, m);
-
-
 
 	RenderExact(&billboard, 1);
 #pragma endregion
@@ -1246,21 +1244,22 @@ void MENUGPU::InitalizeQuad(OBJECT * object, wchar_t * texture)
 	AllocateBuffer(object, texture);
 }
 
-bool MENUGPU::ShutDown()
+void MENUGPU::ShutDown()
 {
-	save.SaveToFile(camera);
 	device->Release();
-	swapchain->Release();
 	context->Release();
+	swapchain->Release();
 	rtv->Release();
 	depthStencil->Release();
 	depthStencilView->Release();
+	Menuvertexshader->Release();
+	Menupixelshader->Release();
 	layout->Release();
 	constBuffer->Release();
-	return true;
 }
 
 MENUGPU::~MENUGPU()
 {
+	ShutDown();
 }
 

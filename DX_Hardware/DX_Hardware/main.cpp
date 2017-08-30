@@ -43,8 +43,6 @@ private:
 	HWND							window;
 	HRESULT							HR;
 
-	MENUGPU * menugpu = nullptr;
-	GAMEGPU * gamegpu = nullptr;
 	GAME * game = nullptr;
 	XTime Time;
 
@@ -76,15 +74,11 @@ SOFTWARE::SOFTWARE(HINSTANCE hinst, WNDPROC proc)
 	ShowWindow(window, SW_SHOW);
 #pragma endregion
 	Time.Restart();
-	menugpu = new MENUGPU(window);
-	gamegpu = new GAMEGPU(window);
-	game = new GAME(menugpu, gamegpu);
-
+	game = new GAME(window);
 }
 SOFTWARE::~SOFTWARE()
 {
-	//The gpu destructor is empty and needs the shutdown function to be called
-
+	ShutDown();
 }
 bool SOFTWARE::Run()
 {
@@ -94,8 +88,7 @@ bool SOFTWARE::Run()
 }
 bool SOFTWARE::ShutDown()
 {
-	//The gpu destructor is empty and needs the shutdown function to be called
-
+	delete game;
 	UnregisterClass(L"DirectXApplication", application);
 	return true;
 }
@@ -185,6 +178,5 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE, LPTSTR, int)
 			DispatchMessage(&msg); //this calls the WndProc function
 		}
 	}
-	software.ShutDown();
 	return 0;
 }

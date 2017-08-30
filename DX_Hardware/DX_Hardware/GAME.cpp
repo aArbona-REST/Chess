@@ -1,54 +1,29 @@
 #include "GAME.h"
 
-GAME::GAME(MENUGPU * menugpu, GAMEGPU * gamegpu)
+GAME::GAME(HWND &window)
 {
 	teamcount = TWO;
 	presentteamturn = MENU;
 
-	this->menugpu = menugpu;
+	this->menugpu = new MENUGPU(window);
 	this->menugpu->CreateRenderTargetView();
 	this->menugpu->DefineViewPort();
 	this->menugpu->DefineAndCreateDepthStencil();
 
-	this->gamegpu = gamegpu;
+	this->gamegpu = new GAMEGPU(window);
 	this->gamegpu->CreateRenderTargetView();
 	this->gamegpu->DefineViewPort();
 	this->gamegpu->DefineAndCreateDepthStencil();
 }
 GAME::~GAME()
 {
+	delete menugpu;
+	delete gamegpu;
 }
 
 void GAME::Run(XTime &T)
 {
 
-	/*switch (presentteamturn)
-	{
-	case MENU:
-	{
-		break;
-	}
-	case ONE:
-	{
-		menugpu->PlayerInput(menugpu->teamone, ONE, TWO);
-		break;
-	}
-	case TWO:
-	{
-		menugpu->PlayerInput(menugpu->teamtwo, TWO, ONE);
-		break;
-	}
-	}
-	if (menugpu->turnended)
-	{
-		presentteamturn++;
-		if (presentteamturn > teamcount)
-			presentteamturn = 1;
-		menugpu->turnended = false;
-	}
-	menugpu->CameraUpdate(T);
-	menugpu->DrawToScreen();
-*/
 	switch (presentteamturn)
 	{
 	case MENU:

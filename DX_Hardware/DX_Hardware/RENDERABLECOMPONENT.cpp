@@ -4,6 +4,10 @@ RENDERABLECOMPONENT::RENDERABLECOMPONENT()
 }
 RENDERABLECOMPONENT::~RENDERABLECOMPONENT()
 {
+	//delete realtimemodel;
+	//delete pvertindices;
+	//delete vsbytecode;
+	//delete psbytecode;
 }
 void RENDERABLECOMPONENT::initfbx(const void * pVSShaderByteCode, const void * pPSShaderByteCode, char * FileName)
 {
@@ -95,28 +99,5 @@ void RENDERABLECOMPONENT::initobj(const void * pVSShaderByteCode, size_t vssize,
 	this->vssize = vssize;
 	this->pssize = pssize;
 
-	trianglecount = (modelindexcount / 3);
-	triangles = new TRIANGLE[trianglecount];
-	for (size_t modelindex = 0, triangleindex = 0; modelindex < (size_t)modelindexcount; modelindex += 3, triangleindex++)
-	{
-		triangles[triangleindex].normal.x = realtimemodel[pvertindices[modelindex]].normal.x;
-		triangles[triangleindex].normal.y = realtimemodel[pvertindices[modelindex]].normal.y;
-		triangles[triangleindex].normal.z = realtimemodel[pvertindices[modelindex]].normal.z;
 
-		triangles[triangleindex].vertices[0].x = realtimemodel[pvertindices[modelindex]].xyzw.x;
-		triangles[triangleindex].vertices[0].y = realtimemodel[pvertindices[modelindex]].xyzw.y;
-		triangles[triangleindex].vertices[0].z = realtimemodel[pvertindices[modelindex]].xyzw.z;
-		
-		triangles[triangleindex].vertices[1].x = realtimemodel[pvertindices[modelindex + 1]].xyzw.x;
-		triangles[triangleindex].vertices[1].y = realtimemodel[pvertindices[modelindex + 1]].xyzw.y;
-		triangles[triangleindex].vertices[1].z = realtimemodel[pvertindices[modelindex + 1]].xyzw.z;
-		
-		triangles[triangleindex].vertices[2].x = realtimemodel[pvertindices[modelindex + 2]].xyzw.x;
-		triangles[triangleindex].vertices[2].y = realtimemodel[pvertindices[modelindex + 2]].xyzw.y;
-		triangles[triangleindex].vertices[2].z = realtimemodel[pvertindices[modelindex + 2]].xyzw.z;
-	}
-
-}
-void RENDERABLECOMPONENT::update(double dt)
-{
 }

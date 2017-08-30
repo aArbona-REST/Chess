@@ -23,11 +23,10 @@ extern int BACKBUFFER_HEIGHT;
 class MENUGPU
 {
 public:
-	//XTime Time;
 	MENUGPU(HWND &window);
 	~MENUGPU();
 	void DrawToScreen();
-	bool ShutDown();
+	void ShutDown();
 	void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam);
 	void MENUGPU::InitalizePlayerShips(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture);
 	void MENUGPU::InitalizeobjAsset(OBJECT * object, char * mesh, wchar_t * texture);
@@ -51,7 +50,6 @@ private:
 	void MENUGPU::Set();
 	void MENUGPU::Clear();
 	float color[4]{ 0.2f, 0.2f, 0.5f, 0.0f };
-	HWND * window = nullptr;
 public:
 	HRESULT							HR;
 private:
@@ -117,9 +115,9 @@ public:
 	ID3D11DepthStencilView * depthStencilView = nullptr;
 private:
 
-	ID3D11Buffer * groundvertbuffer = NULL;
-	ID3D11Buffer * groundindexbuffer = NULL;
-	unsigned int groundindexCount = 0;
+	//ID3D11Buffer * groundvertbuffer = NULL;
+	//ID3D11Buffer * groundindexbuffer = NULL;
+	//unsigned int groundindexCount = 0;
 
 	ID3D11VertexShader * Menuvertexshader = NULL;
 	ID3D11PixelShader * Menupixelshader = NULL;

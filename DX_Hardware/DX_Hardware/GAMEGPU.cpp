@@ -3,7 +3,6 @@
 
 GAMEGPU::GAMEGPU(HWND &window)
 {
-	this->window = &window;
 
 #pragma region swap chain device context
 	DXGI_SWAP_CHAIN_DESC scd;
@@ -11,7 +10,7 @@ GAMEGPU::GAMEGPU(HWND &window)
 	scd.BufferCount = 1;
 	scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	scd.OutputWindow = *(this->window);
+	scd.OutputWindow = window;
 	scd.SampleDesc.Count = 1;
 	scd.Windowed = TRUE;
 	D3D11CreateDeviceAndSwapChain(0, D3D_DRIVER_TYPE_HARDWARE, 0, 0, 0, 0, D3D11_SDK_VERSION, &scd, &swapchain, &device, 0, &context);
@@ -1247,21 +1246,23 @@ void GAMEGPU::InitalizeQuad(OBJECT * object, wchar_t * texture)
 	AllocateBuffer(object, texture);
 }
 
-bool GAMEGPU::ShutDown()
+void GAMEGPU::ShutDown()
 {
-	save.SaveToFile(camera);
+	
 	device->Release();
-	swapchain->Release();
 	context->Release();
+	swapchain->Release();
 	rtv->Release();
 	depthStencil->Release();
 	depthStencilView->Release();
+	Gamevertexshader->Release();
+	Gamepixelshader->Release();
 	layout->Release();
 	constBuffer->Release();
-	return true;
 }
 
 GAMEGPU::~GAMEGPU()
 {
+	ShutDown();
 }
 

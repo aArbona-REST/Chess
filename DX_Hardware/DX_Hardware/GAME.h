@@ -5,7 +5,8 @@
 #include "Save.h"
 #include "USERINPUT.h"
 #include "DDSTextureLoader.h"
-#include "GPU.h"
+#include "MENUGPU.h"
+#include "GAMEGPU.h"
 #include "PLAYER.h"
 
 #include <d3d11.h>
@@ -21,12 +22,14 @@ class GAME
 {
 	unsigned int teamcount;
 	unsigned int presentteamturn;
-
-	GPU * gpu;
+	unsigned int presentscene;
+	GAMEGPU * gamegpu;
+	MENUGPU * menugpu;
 
 public:
-	enum TEAMLIST	{ONE = 1, TWO};
-	GAME(GPU * gpu_handle);
+	enum TEAMLIST	{MENU, ONE, TWO};
+	enum SCENELIST	{MENUSCENE = 1, GAMESCENE};
+	GAME(MENUGPU * menugpu, GAMEGPU * gamegpu);
 	~GAME();
 	void GAME::Run(XTime &T);
 };

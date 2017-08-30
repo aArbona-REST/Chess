@@ -162,7 +162,8 @@
   <ItemGroup>
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="GAME.cpp" />
-    <ClCompile Include="GPU.cpp" />
+    <ClCompile Include="GAMEGPU.cpp" />
+    <ClCompile Include="MENUGPU.cpp" />
     <ClCompile Include="PLAYER.cpp" />
     <ClCompile Include="USERINPUT.cpp" />
     <ClCompile Include="main.cpp" />
@@ -175,7 +176,8 @@
   <ItemGroup>
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="GAME.h" />
-    <ClInclude Include="GPU.h" />
+    <ClInclude Include="GAMEGPU.h" />
+    <ClInclude Include="MENUGPU.h" />
     <ClInclude Include="PLAYER.h" />
     <ClInclude Include="USERINPUT.h" />
     <ClInclude Include="NETWORK.h" />
@@ -185,25 +187,25 @@
     <ClInclude Include="XTime.h" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="BasicPixelShader.hlsl">
+    <FxCompile Include="GamePixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="BasicVertexShader.hlsl">
+    <FxCompile Include="GameVertexShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-    <FxCompile Include="Trivial_PS.hlsl">
+    <FxCompile Include="MenuPixelShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
-    <FxCompile Include="Trivial_VS.hlsl">
+    <FxCompile Include="MenuVertexShader.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

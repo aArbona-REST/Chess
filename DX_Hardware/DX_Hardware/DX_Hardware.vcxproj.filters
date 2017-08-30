@@ -27,9 +27,6 @@
     <ClCompile Include="Save.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GPU.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="NETWORK.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,6 +45,12 @@
     <ClCompile Include="PLAYER.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="MENUGPU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GAMEGPU.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="XTime.h">
@@ -57,9 +60,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Save.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GPU.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NETWORK.h">
@@ -80,18 +80,24 @@
     <ClInclude Include="PLAYER.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MENUGPU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GAMEGPU.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Trivial_VS.hlsl">
+    <FxCompile Include="GamePixelShader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="Trivial_PS.hlsl">
+    <FxCompile Include="GameVertexShader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="BasicPixelShader.hlsl">
+    <FxCompile Include="MenuPixelShader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
-    <FxCompile Include="BasicVertexShader.hlsl">
+    <FxCompile Include="MenuVertexShader.hlsl">
       <Filter>Resource Files</Filter>
     </FxCompile>
   </ItemGroup>

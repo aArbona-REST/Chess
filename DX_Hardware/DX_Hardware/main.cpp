@@ -8,7 +8,8 @@
 #include "XTime.h"
 #include "USERINPUT.h"
 #include "Save.h"
-#include "GPU.h"
+#include "GAMEGPU.h"
+#include "MENUGPU.h"
 #include "GAME.h"
 #include <windowsx.h>
 using namespace std;
@@ -42,7 +43,8 @@ private:
 	HWND							window;
 	HRESULT							HR;
 
-	GPU * gpu = nullptr;
+	MENUGPU * menugpu = nullptr;
+	GAMEGPU * gamegpu = nullptr;
 	GAME * game = nullptr;
 	XTime Time;
 
@@ -74,8 +76,9 @@ SOFTWARE::SOFTWARE(HINSTANCE hinst, WNDPROC proc)
 	ShowWindow(window, SW_SHOW);
 #pragma endregion
 	Time.Restart();
-	gpu = new GPU(window);
-	game = new GAME(gpu);
+	//menugpu = new MENUGPU(window);
+	gamegpu = new GAMEGPU(window);
+	game = new GAME(menugpu, gamegpu);
 
 }
 SOFTWARE::~SOFTWARE()

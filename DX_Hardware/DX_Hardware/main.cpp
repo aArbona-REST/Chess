@@ -76,7 +76,7 @@ SOFTWARE::SOFTWARE(HINSTANCE hinst, WNDPROC proc)
 	ShowWindow(window, SW_SHOW);
 #pragma endregion
 	Time.Restart();
-	//menugpu = new MENUGPU(window);
+	menugpu = new MENUGPU(window);
 	gamegpu = new GAMEGPU(window);
 	game = new GAME(menugpu, gamegpu);
 

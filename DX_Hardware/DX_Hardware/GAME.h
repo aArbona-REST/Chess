@@ -25,10 +25,8 @@ class GAME
 	unsigned int presentscene;
 	GAMEGPU * gamegpu;
 	MENUGPU * menugpu;
-
 public:
 	enum TEAMLIST	{MENU, ONE, TWO};
-	enum SCENELIST	{MENUSCENE = 1, GAMESCENE};
 	GAME(MENUGPU * menugpu, GAMEGPU * gamegpu);
 	~GAME();
 	void GAME::Run(XTime &T);

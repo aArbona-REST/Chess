@@ -3,13 +3,17 @@
 GAME::GAME(MENUGPU * menugpu, GAMEGPU * gamegpu)
 {
 	teamcount = TWO;
-	presentteamturn = ONE;
-	presentscene = GAMESCENE;
+	presentteamturn = MENU;
+
 	this->menugpu = menugpu;
+	this->menugpu->CreateRenderTargetView();
+	this->menugpu->DefineViewPort();
+	this->menugpu->DefineAndCreateDepthStencil();
+
 	this->gamegpu = gamegpu;
-	gamegpu->CreateRenderTargetView();
-	gamegpu->DefineViewPort();
-	gamegpu->DefineAndCreateDepthStencil();
+	this->gamegpu->CreateRenderTargetView();
+	this->gamegpu->DefineViewPort();
+	this->gamegpu->DefineAndCreateDepthStencil();
 }
 GAME::~GAME()
 {
@@ -18,33 +22,86 @@ GAME::~GAME()
 void GAME::Run(XTime &T)
 {
 
-	switch (presentteamturn)
+	/*switch (presentteamturn)
 	{
 	case MENU:
 	{
-
 		break;
 	}
 	case ONE:
 	{
-		gamegpu->PlayerInput(gamegpu->teamone, ONE, TWO);
+		menugpu->PlayerInput(menugpu->teamone, ONE, TWO);
 		break;
 	}
 	case TWO:
 	{
-		gamegpu->PlayerInput(gamegpu->teamtwo, TWO, ONE);
+		menugpu->PlayerInput(menugpu->teamtwo, TWO, ONE);
 		break;
 	}
 	}
-	if (gamegpu->turnended)
+	if (menugpu->turnended)
 	{
 		presentteamturn++;
 		if (presentteamturn > teamcount)
 			presentteamturn = 1;
-		gamegpu->turnended = false;
+		menugpu->turnended = false;
 	}
-	gamegpu->CameraUpdate(T);
-	gamegpu->DrawToScreen();
+	menugpu->CameraUpdate(T);
+	menugpu->DrawToScreen();
+*/
+	switch (presentteamturn)
+	{
+	case MENU:
+	{
+		menugpu->CameraUpdate(T);
+		menugpu->DrawToScreen();
+		if (menugpu->loadgame)
+		{
+			presentteamturn = ONE;
+			menugpu->loadgame = false;
+		}
+		break;
+	}
+	case ONE:
+	{
+		gamegpu->PlayerInput(gamegpu->teamone, ONE);
+		if (gamegpu->returntomenu)
+		{
+			presentteamturn = MENU;
+			gamegpu->returntomenu = false;
+		}
+		if (gamegpu->turnended)
+		{
+			presentteamturn++;
+			if (presentteamturn > teamcount)
+				presentteamturn = 1;
+			gamegpu->turnended = false;
+		}
+		gamegpu->CameraUpdate(T);
+		gamegpu->DrawToScreen();
+		break;
+	}
+	case TWO:
+	{
+		gamegpu->PlayerInput(gamegpu->teamtwo, TWO);
+		if (gamegpu->returntomenu)
+		{
+			presentteamturn = MENU;
+			gamegpu->returntomenu = false;
+		}
+		if (gamegpu->turnended)
+		{
+			presentteamturn++;
+			if (presentteamturn > teamcount)
+				presentteamturn = 1;
+			gamegpu->turnended = false;
+		}
+		gamegpu->CameraUpdate(T);
+		gamegpu->DrawToScreen();
+		break;
+	}
+	}
+
 
 }
 

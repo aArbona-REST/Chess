@@ -38,8 +38,8 @@ MENUGPU::MENUGPU(HWND &window)
 	XMMATRIX perspectiveMatrix = XMMatrixPerspectiveFovLH(fovAngleY, aspectRatio, 0.01f, 10000.0f);
 	XMStoreFloat4x4(&send_to_ram.camProj, XMMatrixTranspose(perspectiveMatrix));
 
-	send_to_ram.spot_light_pos = XMFLOAT4(0.0f, 10.0f, 0.0f, 0.0f);
-	send_to_ram.spot_light_dir = XMFLOAT4(0.0f, -1.0f, 0.0f, 0.0f);
+	send_to_ram.spot_light_pos = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	send_to_ram.spot_light_dir = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
 
 
 	ZeroMemory(&bufferdescription, sizeof(D3D11_BUFFER_DESC));
@@ -181,7 +181,7 @@ void MENUGPU::DrawToScreen()
 	swapchain->Present(0, 0);
 }
 
-void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int enemyteam)
+void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam)
 {
 
 	if (!input.buttons[VK_END])
@@ -214,7 +214,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 					{
 						teamone[selectedobject].shipselectedheading = OBJECT::NONE;
 						teamone[selectedobject].shipmovecount = 0;
-						turnended = true;
+						loadgame = true;
 					}
 					selectedobject = -1;
 				}
@@ -262,7 +262,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 							teamone[selectedobject].shipmovecount = 0;
 							pieceselected = !pieceselected;
 							selectedobject = -1;
-							turnended = true;
+							loadgame = true;
 						}
 						break;
 					}
@@ -283,7 +283,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 						teamone[selectedobject].shipmovecount = 0;
 						pieceselected = !pieceselected;
 						selectedobject = -1;
-						turnended = true;
+						loadgame = true;
 						teamtwocount--;
 						break;
 					}
@@ -333,7 +333,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 							teamone[selectedobject].shipmovecount = 0;
 							pieceselected = !pieceselected;
 							selectedobject = -1;
-							turnended = true;
+							loadgame = true;
 						}
 						break;
 					}
@@ -353,7 +353,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 						teamone[selectedobject].shipmovecount = 0;
 						pieceselected = !pieceselected;
 						selectedobject = -1;
-						turnended = true;
+						loadgame = true;
 						teamtwocount--;
 						break;
 					}
@@ -402,7 +402,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 							teamone[selectedobject].shipmovecount = 0;
 							pieceselected = !pieceselected;
 							selectedobject = -1;
-							turnended = true;
+							loadgame = true;
 						}
 						break;
 					}
@@ -424,7 +424,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 						teamone[selectedobject].shipmovecount = 0;
 						pieceselected = !pieceselected;
 						selectedobject = -1;
-						turnended = true;
+						loadgame = true;
 						teamtwocount--;
 						break;
 					}
@@ -473,7 +473,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 							teamone[selectedobject].shipmovecount = 0;
 							pieceselected = !pieceselected;
 							selectedobject = -1;
-							turnended = true;
+							loadgame = true;
 						}
 						break;
 					}
@@ -494,7 +494,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 						teamone[selectedobject].shipmovecount = 0;
 						pieceselected = !pieceselected;
 						selectedobject = -1;
-						turnended = true;
+						loadgame = true;
 						teamtwocount--;
 						break;
 					}
@@ -526,7 +526,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 					{
 						teamtwo[selectedobject].shipselectedheading = OBJECT::NONE;
 						teamtwo[selectedobject].shipmovecount = 0;
-						turnended = true;
+						loadgame = true;
 					}
 					selectedobject = -1;
 				}
@@ -573,7 +573,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 							teamtwo[selectedobject].shipmovecount = 0;
 							pieceselected = !pieceselected;
 							selectedobject = -1;
-							turnended = true;
+							loadgame = true;
 						}
 						break;
 					}
@@ -593,7 +593,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 						teamtwo[selectedobject].shipmovecount = 0;
 						pieceselected = !pieceselected;
 						selectedobject = -1;
-						turnended = true;
+						loadgame = true;
 						teamtwocount--;
 						break;
 					}
@@ -643,7 +643,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 							teamtwo[selectedobject].shipmovecount = 0;
 							pieceselected = !pieceselected;
 							selectedobject = -1;
-							turnended = true;
+							loadgame = true;
 						}
 						break;
 					}
@@ -663,7 +663,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 						teamtwo[selectedobject].shipmovecount = 0;
 						pieceselected = !pieceselected;
 						selectedobject = -1;
-						turnended = true;
+						loadgame = true;
 						teamtwocount--;
 						break;
 					}
@@ -712,7 +712,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 							teamtwo[selectedobject].shipmovecount = 0;
 							pieceselected = !pieceselected;
 							selectedobject = -1;
-							turnended = true;
+							loadgame = true;
 						}
 						break;
 					}
@@ -734,7 +734,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 						teamtwo[selectedobject].shipmovecount = 0;
 						pieceselected = !pieceselected;
 						selectedobject = -1;
-						turnended = true;
+						loadgame = true;
 						teamtwocount--;
 						break;
 					}
@@ -783,7 +783,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 							teamtwo[selectedobject].shipmovecount = 0;
 							pieceselected = !pieceselected;
 							selectedobject = -1;
-							turnended = true;
+							loadgame = true;
 						}
 						break;
 					}
@@ -804,7 +804,7 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 						teamtwo[selectedobject].shipmovecount = 0;
 						pieceselected = !pieceselected;
 						selectedobject = -1;
-						turnended = true;
+						loadgame = true;
 						teamtwocount--;
 						break;
 					}
@@ -820,6 +820,15 @@ void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned in
 
 void MENUGPU::CameraUpdate(XTime &Time)
 {
+
+	if (!input.buttons[VK_RIGHT])
+		input.buttonbuffer[VK_RIGHT] = false;
+	if (input.buttonbuffer[VK_RIGHT] == false && input.buttons[VK_RIGHT])
+	{
+		loadgame = true;
+		input.buttonbuffer[VK_RIGHT] = true;
+	}
+
 
 	XMMATRIX newcamera = XMLoadFloat4x4(&camera);
 

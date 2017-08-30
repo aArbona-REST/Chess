@@ -28,7 +28,7 @@ public:
 	~MENUGPU();
 	void DrawToScreen();
 	bool ShutDown();
-	void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int enemyteam);
+	void MENUGPU::PlayerInput(OBJECT * objects, unsigned int playerteam);
 	void MENUGPU::InitalizePlayerShips(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture);
 	void MENUGPU::InitalizeobjAsset(OBJECT * object, char * mesh, wchar_t * texture);
 	void MENUGPU::InitalizeQuad(OBJECT * object, wchar_t * texture);
@@ -88,7 +88,7 @@ private:
 	int selectedobject = -1;
 	bool pieceselected = false;
 public:
-	bool turnended = false;
+	bool loadgame = false;
 	//OBJECT teamone[18];
 	//OBJECT teamtwo[18];
 	//int teamonecount = 18;

@@ -18,18 +18,18 @@ cbuffer THIS_IS_VRAM : register(b0)
 float4 main(OUTPUT_VERTEX input) : SV_TARGET
 {
 	float4 Texture_Color = Texture.Sample(DefaultFilter, input.uv);
-	return input.colorOut * Texture_Color;//
+	return input.colorOut * Texture_Color;
 
 
 
-										  //light color
+	//light color
 	float4 Light_Color = float4(1.0f, 1.0f, 1.0f, 0.0f);
 
 
 	//point light//
 	//float4 Light_Direction = normalize(spot_light_pos - input.l_pos);
 	//float Light_Ratio = clamp(dot(spot_light_dir, normalize(input.normal)), 0.0f, 1.0f);
-	//float p_lightAttenuation = 1.0f - clamp(length(spot_light_pos - input.l_pos) / 10000.0f, 0.0f, 1.0f);
+	//float p_lightAttenuation = 1.0f - clamp(length(spot_light_pos - input.l_pos) / 200.0f, 0.0f, 1.0f);
 	//Light_Color = p_lightAttenuation * Light_Ratio * Light_Color;
 
 	//spot lighting//

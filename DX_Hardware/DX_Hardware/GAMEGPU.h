@@ -28,7 +28,7 @@ public:
 	~GAMEGPU();
 	void DrawToScreen();
 	bool ShutDown();
-	void GAMEGPU::PlayerInput(OBJECT * objects, unsigned int playerteam, unsigned int enemyteam);
+	void GAMEGPU::PlayerInput(OBJECT * objects, unsigned int playerteam);
 	void GAMEGPU::InitalizePlayerShips(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture);
 	void GAMEGPU::InitalizeobjAsset(OBJECT * object, char * mesh, wchar_t * texture);
 	void GAMEGPU::InitalizeQuad(OBJECT * object, wchar_t * texture);
@@ -88,6 +88,7 @@ private:
 	int selectedobject = -1;
 	bool pieceselected = false;
 public:
+	bool returntomenu = false;
 	bool turnended = false;
 	//OBJECT teamone[18];
 	//OBJECT teamtwo[18];

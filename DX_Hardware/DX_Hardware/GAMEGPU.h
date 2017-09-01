@@ -20,7 +20,7 @@ extern Save save;
 extern int BACKBUFFER_WIDTH;
 extern int BACKBUFFER_HEIGHT;
 
-class GAMEGPU
+class GAMEGPU//TODO:: all the variables are being set here and should be set in the constructor
 {
 public:
 	GAMEGPU(HWND &window);

@@ -26,7 +26,8 @@ class GAME
 	GAMEGPU * gamegpu;
 	MENUGPU * menugpu;
 public:
-	enum TEAMLIST	{MENU, ONE, TWO};
+	enum GAMESCENE {MENUSCENE = 1, GAMESCENE};
+	enum TEAMLIST	{ONE = 1, TWO};
 	//GAME(MENUGPU * menugpu, GAMEGPU * gamegpu);
 	GAME(HWND &window);
 	~GAME();

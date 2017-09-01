@@ -181,7 +181,7 @@ void GAMEGPU::DrawToScreen()
 	swapchain->Present(0, 0);
 }
 
-void GAMEGPU::PlayerInput(OBJECT * objects, unsigned int playerteam)
+void GAMEGPU::PlayerInput(OBJECT * objects, unsigned int playerteam)//update this function signature to only have the player team (the function inherintly has access to objects and just needs to know what team is supplying imput to apply that imput to the correct objects array)
 {
 
 	if (!input.buttons[VK_END])

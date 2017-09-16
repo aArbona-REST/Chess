@@ -66,20 +66,7 @@ private:
 		NODE * left = nullptr;
 		NODE * right = nullptr;
 	};
-	struct QUAD
-	{
-		unsigned int vertcount = 4;
-		unsigned int indexcount = 6;
-		unsigned int groundPlaneindex[6]{ 0,1,3,1,2,3 };
-		XMFLOAT4 groundColor{ 1.0f, 1.0f, 1.0f, 0.0f };
-		SIMPLE_VERTEX groundPlane[4]{ 
-			{ XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f) ,XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(0.0f, 1.0f) },
-			{ XMFLOAT4(1.0f, 0.0f, -1.0f, 1.0f) ,XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(1.0f, 1.0f) },
-			{ XMFLOAT4(-1.0f, 0.0f, -1.0f, 1.0f) ,XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(1.0f, 0.0f) },
-			{ XMFLOAT4(-1.0f, 0.0f, 1.0f, 1.0f) ,XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(0.0f, 0.0f) },
-		};
-	};
-	QUAD quad;
+
 	NODE map[14][8];
 	OBJECT quadsmap[14][8];
 	OBJECT billboard;

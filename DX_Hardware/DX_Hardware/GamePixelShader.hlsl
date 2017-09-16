@@ -26,7 +26,7 @@ float4 main(OUTPUT_VERTEX input) : SV_TARGET
 	float4 Light_Color = float4(1.0f, 1.0f, 1.0f, 0.0f);
 
 
-	//point light//
+	//point light (could be a direction light)(i mislabeded and never checked)//
 	float4 Light_Direction = normalize(spot_light_pos - input.l_pos);
 	float Light_Ratio = clamp(dot(spot_light_dir, normalize(input.normal)), 0.0f, 1.0f);
 	float p_lightAttenuation = 1.0f - clamp(length(spot_light_pos - input.l_pos) / 200.0f, 0.0f, 1.0f);

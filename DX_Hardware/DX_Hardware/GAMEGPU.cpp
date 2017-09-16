@@ -38,7 +38,7 @@ GAMEGPU::GAMEGPU(HWND &window)
 	XMMATRIX perspectiveMatrix = XMMatrixPerspectiveFovLH(fovAngleY, aspectRatio, 0.01f, 10000.0f);
 	XMStoreFloat4x4(&send_to_ram.camProj, XMMatrixTranspose(perspectiveMatrix));
 
-	send_to_ram.spot_light_pos = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f);
+	send_to_ram.spot_light_pos = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
 	send_to_ram.spot_light_dir = XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f);
 
 
@@ -579,7 +579,7 @@ void GAMEGPU::PlayerInput(OBJECT * objects, unsigned int playerteam)//update thi
 					}
 					case 1:
 					{
-						teamtwo[map[row][depth].left->occupieindex].alive = false;
+						teamone[map[row][depth].left->occupieindex].alive = false;//same bug that takes place 
 						selectedobjecticon.positionindex[0] = map[row][depth].left->positionindex[0];
 						selectedobjecticon.positionindex[1] = map[row][depth].left->positionindex[1];
 						map[row][depth].positionstatus = 0;
@@ -649,7 +649,7 @@ void GAMEGPU::PlayerInput(OBJECT * objects, unsigned int playerteam)//update thi
 					}
 					case 1:
 					{
-						teamtwo[map[row][depth].right->occupieindex].alive = false;
+						teamone[map[row][depth].right->occupieindex].alive = false;//shouldnt this be team on who get set to false since team two is the one moveing on the occupies space
 						selectedobjecticon.positionindex[0] = map[row][depth].right->positionindex[0];
 						selectedobjecticon.positionindex[1] = map[row][depth].right->positionindex[1];
 						map[row][depth].positionstatus = 0;
@@ -855,7 +855,6 @@ void GAMEGPU::CameraUpdate(XTime &Time)
 	input.mouse_move = false;
 	XMStoreFloat4x4(&camera, newcamera);
 	XMStoreFloat4x4(&send_to_ram.camView, XMMatrixTranspose(XMMatrixInverse(0, newcamera)));
-
 
 	ZeroMemory(&mapResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
 	context->Map(constBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mapResource);
@@ -1240,8 +1239,21 @@ void GAMEGPU::InitalizeobjAsset(OBJECT * object, char * mesh, wchar_t * texture)
 
 void GAMEGPU::InitalizeQuad(OBJECT * object, wchar_t * texture)
 {
-
-	object->mesh.inittridebug(GameVertexShader, sizeof(GameVertexShader), GamePixelShader, sizeof(GamePixelShader), quad.groundPlane, quad.vertcount, quad.groundPlaneindex, quad.indexcount);
+	struct QUAD
+	{
+		unsigned int vertcount = 4;
+		unsigned int indexcount = 6;
+		unsigned int groundPlaneindex[6]{ 0,1,3,1,2,3 };
+		XMFLOAT4 groundColor{ 1.0f, 1.0f, 1.0f, 0.0f };
+		SIMPLE_VERTEX groundPlane[4]{
+			{ XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f) ,XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(0.0f, 1.0f) },
+			{ XMFLOAT4(1.0f, 0.0f, -1.0f, 1.0f) ,XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(1.0f, 1.0f) },
+			{ XMFLOAT4(-1.0f, 0.0f, -1.0f, 1.0f) ,XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(1.0f, 0.0f) },
+			{ XMFLOAT4(-1.0f, 0.0f, 1.0f, 1.0f) ,XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(0.0f, 0.0f) },
+		};
+	};
+	QUAD q;
+	object->mesh.inittridebug(GameVertexShader, sizeof(GameVertexShader), GamePixelShader, sizeof(GamePixelShader), q.groundPlane, q.vertcount, q.groundPlaneindex, q.indexcount);
 	XMStoreFloat4x4(&object->mesh.send_to_ram2.modelPos, XMMatrixTranspose(XMMatrixIdentity()));
 	AllocateBuffer(object, texture);
 }

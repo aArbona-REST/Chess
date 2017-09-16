@@ -20,15 +20,16 @@ extern int BACKBUFFER_HEIGHT;
 
 class GAME
 {
+	void GAME::SceneTransition();
+	void GAME::TurnTransition();
 	unsigned int teamcount;
 	unsigned int presentteamturn;
 	unsigned int presentscene;
 	GAMEGPU * gamegpu;
 	MENUGPU * menugpu;
 public:
-	enum GAMESCENE {MENUSCENE = 1, GAMESCENE};
+	enum GAMESCENE {MENUSCENE = 1, GAMESCENE, LOADMENU, LOADGAME};
 	enum TEAMLIST	{ONE = 1, TWO};
-	//GAME(MENUGPU * menugpu, GAMEGPU * gamegpu);
 	GAME(HWND &window);
 	~GAME();
 	void GAME::Run(XTime &T);

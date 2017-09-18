@@ -42,9 +42,12 @@ private:
 
 	void MENUGPU::Set();
 	void MENUGPU::Clear();
-	
+
 	float color[4]{ 0.2f, 0.2f, 0.5f, 0.0f };
-	OBJECT newgame, exit, credits;
+	unsigned int presenticonselected;
+	XMMATRIX menulistposition[3];
+	enum MENULIST { EXIT, CREDITS, NEWGAME };
+	OBJECT newgame, exit, credits, icon;
 	D3D11_BUFFER_DESC bufferdescription;
 	D3D11_SUBRESOURCE_DATA InitData;
 	ID3D11Device *device = NULL;

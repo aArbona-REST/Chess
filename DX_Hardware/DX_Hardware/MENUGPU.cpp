@@ -70,27 +70,33 @@ MENUGPU::MENUGPU(HWND &window)
 	UINT numElements = ARRAYSIZE(vertlayout);
 	device->CreateInputLayout(vertlayout, numElements, MenuVertexShader, sizeof(MenuVertexShader), &layout);
 #pragma endregion
-	m = {
-		1.0f, 0.0f, 0.0f, 0.0f,
-		0.0f, 1.0f, 0.0f, 0.0f,
-		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 100.0f, 1.0f
-	};
-	InitalizeobjAsset(&newgame, "newgame_text.obj", L"white.dds", &m);
-	m = {
+
+	menulistposition[EXIT] = {
 		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
 		0.0f, 10.0f, 100.0f, 1.0f
 	};
-	InitalizeobjAsset(&exit, "exit_text.obj", L"white.dds", &m);
-	m = {
+	InitalizeobjAsset(&exit, "exit_text.obj", L"white.dds", &menulistposition[EXIT]);
+	//
+	menulistposition[CREDITS] = {
 		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
 		0.0f, 20.0f, 100.0f, 1.0f
 	};
-	InitalizeobjAsset(&credits, "credits_text.obj", L"white.dds", &m);
+	InitalizeobjAsset(&credits, "credits_text.obj", L"white.dds", &menulistposition[CREDITS]);
+	//
+	menulistposition[NEWGAME] = {
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 30.0f, 100.0f, 1.0f
+	};
+	InitalizeobjAsset(&newgame, "newgame_text.obj", L"white.dds", &menulistposition[NEWGAME]);
+	//
+	presenticonselected = EXIT;
+	InitalizeobjAsset(&icon, "sphere.obj", L"black.dds", &menulistposition[presenticonselected]);
 
 }
 
@@ -103,6 +109,7 @@ void MENUGPU::DrawToScreen()
 	RenderExact(&newgame, 1);
 	RenderExact(&exit, 1);
 	RenderExact(&credits, 1);
+	RenderExact(&icon, 1);
 
 	swapchain->Present(0, 0);
 }
@@ -110,6 +117,7 @@ void MENUGPU::DrawToScreen()
 void MENUGPU::CameraUpdate(XTime &Time)
 {
 
+#pragma region debug scenechange
 	if (!input.buttons[VK_RIGHT])
 		input.buttonbuffer[VK_RIGHT] = false;
 	if (input.buttonbuffer[VK_RIGHT] == false && input.buttons[VK_RIGHT])
@@ -117,6 +125,33 @@ void MENUGPU::CameraUpdate(XTime &Time)
 		loadgame = true;
 		input.buttonbuffer[VK_RIGHT] = true;
 	}
+#pragma endregion
+	
+	if (!input.buttons[VK_DOWN])
+		input.buttonbuffer[VK_DOWN] = false;
+	if (input.buttonbuffer[VK_DOWN] == false && input.buttons[VK_DOWN])
+	{
+		if (presenticonselected == 0)
+			presenticonselected = NEWGAME;
+		else
+			--presenticonselected;
+		XMStoreFloat4x4(&icon.mesh.send_to_ram2.modelPos, XMMatrixTranspose(menulistposition[presenticonselected]));
+
+		input.buttonbuffer[VK_DOWN] = true;
+	}
+	
+	if (!input.buttons[VK_UP])
+		input.buttonbuffer[VK_UP] = false;
+	if (input.buttonbuffer[VK_UP] == false && input.buttons[VK_UP])
+	{
+		if (presenticonselected == NEWGAME)
+			presenticonselected = EXIT;
+		else
+			++presenticonselected;
+		XMStoreFloat4x4(&icon.mesh.send_to_ram2.modelPos, XMMatrixTranspose(menulistposition[presenticonselected]));
+		input.buttonbuffer[VK_UP] = true;
+	}
+
 
 
 	XMMATRIX newcamera = XMLoadFloat4x4(&camera);
@@ -282,7 +317,7 @@ void MENUGPU::CreateConstantBuffer(void * data, unsigned int size, ID3D11Buffer 
 
 }
 
-void MENUGPU::InitalizeobjAsset(OBJECT * object, char * mesh, wchar_t * texture, XMMATRIX * m)//add position data to signature
+void MENUGPU::InitalizeobjAsset(OBJECT * object, char * mesh, wchar_t * texture, XMMATRIX * m)
 {
 	object->mesh.initobj(MenuVertexShader, sizeof(MenuVertexShader), MenuPixelShader, sizeof(MenuPixelShader), mesh);
 	XMStoreFloat4x4(&object->mesh.send_to_ram2.modelPos, XMMatrixTranspose(*m));

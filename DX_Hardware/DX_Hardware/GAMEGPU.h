@@ -27,7 +27,7 @@ public:
 	~GAMEGPU();
 	void DrawToScreen();
 	void ShutDown();
-	void GAMEGPU::PlayerInput(OBJECT * objects, unsigned int playerteam);
+	void GAMEGPU::PlayerInput(unsigned int playerteam);
 	void GAMEGPU::InitalizePlayerShips(unsigned int team, OBJECT * object, char * mesh, wchar_t * texture);
 	void GAMEGPU::InitalizeobjAsset(OBJECT * object, char * mesh, wchar_t * texture);
 	void GAMEGPU::InitalizeQuad(OBJECT * object, wchar_t * texture);
@@ -41,10 +41,7 @@ public:
 	void GAMEGPU::DefineAndCreateDepthStencil();
 private:
 	void GAMEGPU::LoadTitan(unsigned int team, OBJECT * object);
-	void GAMEGPU::LoadBattleship(unsigned int team, OBJECT * object);
-	void GAMEGPU::LoadCruiser(unsigned int team, OBJECT * object);
 	void GAMEGPU::LoadFrigate(unsigned int team, OBJECT * object);
-	void GAMEGPU::LoadDestroyer(unsigned int team, OBJECT * object);
 	void GAMEGPU::LoadFighter(unsigned int team, OBJECT * object);
 
 	void GAMEGPU::Set();
@@ -68,28 +65,28 @@ private:
 	};
 
 	NODE map[14][8];
-	OBJECT quadsmap[14][8];
+	OBJECT quadsmap[14][8];//this need to be synced for network play
 	OBJECT billboard;
 	int selectedobject = -1;
 	bool pieceselected = false;
 public:
 	bool returntomenu = false;
 	bool turnended = false;
-	//OBJECT teamone[18];
-	//OBJECT teamtwo[18];
-	//int teamonecount = 18;
-	//int teamtwocount = 18;
-	OBJECT teamone[6];
-	OBJECT teamtwo[6];
-	int teamonecount = 6;
-	int teamtwocount = 6;
+	OBJECT teamone[18];
+	OBJECT teamtwo[18];
+	int teamonecount = 18;//this need to be synced for network play
+	int teamtwocount = 18;//this need to be synced for network play
+	//OBJECT teamone[6];
+	//OBJECT teamtwo[6];
+	//int teamonecount = 6;
+	//int teamtwocount = 6;
 private:	
 	OBJECT selectedobjecticon;
 	//modifies to reduce player ships to test a full runthough quicker
-	//unsigned int teamcapacity = 18;
-	//unsigned int piececount = 18;
-	unsigned int teamcapacity = 6;
-	unsigned int piececount = 6;
+	unsigned int teamcapacity = 18;
+	unsigned int piececount = 18;
+	//unsigned int teamcapacity = 6;
+	//unsigned int piececount = 6;
 	D3D11_BUFFER_DESC bufferdescription;
 	D3D11_SUBRESOURCE_DATA InitData;
 
@@ -111,12 +108,12 @@ private:
 	ID3D11PixelShader * Gamepixelshader = NULL;//delete
 
 
-	public:
+public:
 	ID3D11InputLayout * layout = NULL;//delete
 	ID3D11Buffer * constBuffer = NULL;//delete
 	VRAM send_to_ram;
 	XMFLOAT4X4 camera;
-	private:
+private:
 	UINT stride = sizeof(SIMPLE_VERTEX);
 	UINT offset = 0;
 	D3D11_MAPPED_SUBRESOURCE mapResource;

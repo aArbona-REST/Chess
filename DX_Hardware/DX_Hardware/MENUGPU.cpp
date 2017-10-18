@@ -118,6 +118,7 @@ void MENUGPU::CameraUpdate(XTime &Time)
 {
 
 #pragma region debug scenechange
+	//TODO: remove this code once a way to leave game to menu is made
 	if (!input.buttons[VK_RIGHT])
 		input.buttonbuffer[VK_RIGHT] = false;
 	if (input.buttonbuffer[VK_RIGHT] == false && input.buttons[VK_RIGHT])
@@ -126,7 +127,8 @@ void MENUGPU::CameraUpdate(XTime &Time)
 		input.buttonbuffer[VK_RIGHT] = true;
 	}
 #pragma endregion
-	
+
+#pragma region menu nav
 	if (!input.buttons[VK_DOWN])
 		input.buttonbuffer[VK_DOWN] = false;
 	if (input.buttonbuffer[VK_DOWN] == false && input.buttons[VK_DOWN])
@@ -139,7 +141,7 @@ void MENUGPU::CameraUpdate(XTime &Time)
 
 		input.buttonbuffer[VK_DOWN] = true;
 	}
-	
+
 	if (!input.buttons[VK_UP])
 		input.buttonbuffer[VK_UP] = false;
 	if (input.buttonbuffer[VK_UP] == false && input.buttons[VK_UP])
@@ -151,8 +153,22 @@ void MENUGPU::CameraUpdate(XTime &Time)
 		XMStoreFloat4x4(&icon.mesh.send_to_ram2.modelPos, XMMatrixTranspose(menulistposition[presenticonselected]));
 		input.buttonbuffer[VK_UP] = true;
 	}
+#pragma endregion
 
-
+#pragma region enter key
+	if (!input.buttons[VK_RETURN])
+		input.buttonbuffer[VK_RETURN] = false;
+	if (input.buttonbuffer[VK_RETURN] == false && input.buttons[VK_RETURN])
+	{
+		input.buttonbuffer[VK_RETURN] = true;
+		if (presenticonselected == NEWGAME)
+			loadgame = true;
+		else if (presenticonselected == EXIT)
+		{
+			shutdown = true;
+		}
+	}
+#pragma endregion
 
 	XMMATRIX newcamera = XMLoadFloat4x4(&camera);
 

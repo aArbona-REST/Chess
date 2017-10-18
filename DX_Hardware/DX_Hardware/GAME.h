@@ -28,7 +28,7 @@ class GAME
 	GAMEGPU * gamegpu;
 	MENUGPU * menugpu;
 public:
-	enum GAMESCENE {MENUSCENE = 1, GAMESCENE, LOADMENU, LOADGAME};
+	enum GAMESCENE {MENUSCENE = 1, GAMESCENE, SHUTDOWN};
 	enum TEAMLIST	{ONE = 1, TWO};
 	GAME(HWND &window);
 	~GAME();

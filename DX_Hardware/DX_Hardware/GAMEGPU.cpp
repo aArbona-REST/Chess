@@ -23,10 +23,8 @@ GAMEGPU::GAMEGPU(HWND &window)
 		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 10.0f, 0.0f, 1.0f
-	};
-	//ten units in y  and 100 units in negative z 
-	//save.LoadFromFile(camera);
+		0.0f, 50.0f, 0.0f, 1.0f
+	}; 
 	XMStoreFloat4x4(&camera, m);
 	XMStoreFloat4x4(&send_to_ram.camView, XMMatrixTranspose(XMLoadFloat4x4(&camera)));
 
@@ -181,7 +179,7 @@ void GAMEGPU::DrawToScreen()
 	swapchain->Present(0, 0);
 }
 
-void GAMEGPU::PlayerInput(OBJECT * objects, unsigned int playerteam)//update this function signature to only have the player team (the function inherintly has access to objects and just needs to know what team is supplying imput to apply that imput to the correct objects array)
+void GAMEGPU::PlayerInput(unsigned int playerteam)
 {
 
 	if (!input.buttons[VK_END])
@@ -853,6 +851,7 @@ void GAMEGPU::CameraUpdate(XTime &Time)
 			newcamera.r[3] = pos;
 		}
 	input.mouse_move = false;
+
 	XMStoreFloat4x4(&camera, newcamera);
 	XMStoreFloat4x4(&send_to_ram.camView, XMMatrixTranspose(XMMatrixInverse(0, newcamera)));
 
@@ -895,7 +894,7 @@ void GAMEGPU::Render(OBJECT * object, unsigned int count)
 			object[i].mesh.send_to_ram2.modelPos._14 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.x;
 			object[i].mesh.send_to_ram2.modelPos._24 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.y;
 			object[i].mesh.send_to_ram2.modelPos._34 = map[object[i].positionindex[0]][object[i].positionindex[1]].position.z;
-			object[i].mesh.send_to_ram2.modelPos._24 += 0.5f;
+			object[i].mesh.send_to_ram2.modelPos._24 += 10.5f;
 		}
 		else
 		{
@@ -1038,7 +1037,7 @@ void GAMEGPU::InitalizePlayerShips(unsigned int team, OBJECT * object, char * me
 		init_depth = 1;
 		break;
 	case 2:
-		init_row = 11;
+		init_row = 7;
 		init_depth = 1;
 		break;
 	}
@@ -1050,8 +1049,7 @@ void GAMEGPU::InitalizePlayerShips(unsigned int team, OBJECT * object, char * me
 		object[i].positionindex[0] = init_row;
 		object[i].positionindex[1] = init_depth;
 		init_depth += 1;
-		//if (init_depth == 7)//modifies to reduce player ships to test a full runthough quicker
-		if (init_depth == 3)
+		if (init_depth == 7)
 		{
 			init_row += 1;
 			init_depth = 1;
@@ -1065,33 +1063,30 @@ void GAMEGPU::InitalizePlayerShips(unsigned int team, OBJECT * object, char * me
 		{
 			//LoadDestroyer(team, &object[i]);
 			LoadFighter(team, &object[i]);
-
 			break;
 		}
 		case 1://fighter
 		{
 			//LoadFrigate(team, &object[i]);
 			LoadFighter(team, &object[i]);
-
 			break;
 		}
 		case 2://fighter
 		{
 			//LoadFighter(team, &object[i]);
-			LoadFrigate(team, &object[i]);
+			LoadFighter(team, &object[i]);
 			break;
 		}
 		case 3://fighter
 		{
 			//LoadFighter(team, &object[i]);
-			LoadFrigate(team, &object[i]);
+			LoadFighter(team, &object[i]);
 			break;
 		}
 		case 4://fighter
 		{
 			//LoadFrigate(team, &object[i]);
 			LoadFighter(team, &object[i]);
-
 			break;
 		}
 		case 5://fighter
@@ -1114,14 +1109,14 @@ void GAMEGPU::InitalizePlayerShips(unsigned int team, OBJECT * object, char * me
 		}
 		case 8://frigate
 		{
-			//LoadTitan(team, &object[i]);
-			LoadFrigate(team, &object[i]);
+			LoadTitan(team, &object[i]);
+			//LoadFrigate(team, &object[i]);
 			break;
 		}
 		case 9://frigate
 		{
-			//LoadTitan(team, &object[i]);
-			LoadFrigate(team, &object[i]);
+			LoadTitan(team, &object[i]);
+			//LoadFrigate(team, &object[i]);
 			break;
 		}
 		case 10://frigate
@@ -1172,9 +1167,6 @@ void GAMEGPU::InitalizePlayerShips(unsigned int team, OBJECT * object, char * me
 		}
 		}
 
-		//object[i].mesh.initobj(GameVertexShader, sizeof(GameVertexShader), GamePixelShader, sizeof(GamePixelShader), mesh);
-		//AllocateBuffer(&object[i], texture);
-
 	}
 }
 
@@ -1183,51 +1175,27 @@ void GAMEGPU::LoadFighter(unsigned int team, OBJECT * object)
 	//TODO: make teams have different Base color
 	object->mesh.initobj(GameVertexShader, sizeof(GameVertexShader), GamePixelShader, sizeof(GamePixelShader), "Fighter_obj.obj");
 	object->shipmoveheading = OBJECT::ANGLE;
-	object->shipmoverange = OBJECT::THREE;
+	object->shipmoverange = OBJECT::TWO;
 	AllocateBuffer(object, L"Fighter_Base.dds");
 
 }
 
 void GAMEGPU::LoadFrigate(unsigned int team, OBJECT * object)
 {
-	//TODO: make teams have different Base color
 	object->mesh.initobj(GameVertexShader, sizeof(GameVertexShader), GamePixelShader, sizeof(GamePixelShader), "Frigate_obj.obj");
 	object->shipmoveheading = OBJECT::FORWARD;
-	object->shipmoverange = OBJECT::TWO;
+	object->shipmoverange = OBJECT::THREE;
 	AllocateBuffer(object, L"Frigate_Base.dds");
 
 }
 
-#pragma region load ship functions
-
 void GAMEGPU::LoadTitan(unsigned int team, OBJECT * object)
 {
 	object->mesh.initobj(GameVertexShader, sizeof(GameVertexShader), GamePixelShader, sizeof(GamePixelShader), "talon.obj");
+	object->shipmoveheading = OBJECT::FORWARD;
+	object->shipmoverange = OBJECT::TEN;
 	AllocateBuffer(object, L"talon.dds");
 }
-
-void GAMEGPU::LoadBattleship(unsigned int team, OBJECT * object)
-{
-	object->mesh.initobj(GameVertexShader, sizeof(GameVertexShader), GamePixelShader, sizeof(GamePixelShader), "talon.obj");
-	AllocateBuffer(object, L"talon.dds");
-
-}
-
-void GAMEGPU::LoadCruiser(unsigned int team, OBJECT * object)
-{
-	object->mesh.initobj(GameVertexShader, sizeof(GameVertexShader), GamePixelShader, sizeof(GamePixelShader), "talon.obj");
-	AllocateBuffer(object, L"talon.dds");
-
-}
-
-void GAMEGPU::LoadDestroyer(unsigned int team, OBJECT * object)
-{
-	object->mesh.initobj(GameVertexShader, sizeof(GameVertexShader), GamePixelShader, sizeof(GamePixelShader), "talon.obj");
-	AllocateBuffer(object, L"talon.dds");
-
-}
-
-#pragma endregion
 
 void GAMEGPU::InitalizeobjAsset(OBJECT * object, char * mesh, wchar_t * texture)
 {

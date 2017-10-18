@@ -23,8 +23,8 @@ using namespace DirectX;
 
 #include <math.h>
 
-int BACKBUFFER_WIDTH = 1920;
-int BACKBUFFER_HEIGHT = 1080;
+int BACKBUFFER_WIDTH = 400;
+int BACKBUFFER_HEIGHT = 400;
 
 Save save;
 USERINPUT input;

@@ -10,7 +10,7 @@ public:
 	bool ship;
 	//TODO: add variables to allow the game to know what movement the ship can have
 	enum SHIPMOVEHEADING { FORWARD = 1, ANGLE };
-	enum SHIPMOVERANGE { ZERO, ONE, TWO, THREE, FOUR };
+	enum SHIPMOVERANGE { ZERO, ONE, TWO, THREE, FOUR, TEN = 10 };
 	enum HEADING { NONE, UP, UPRIGHT, RIGHT, DOWNRIGHT, DOWN, DOWNLEFT, LEFT, LEFTUP };
 	unsigned int shipmoveheading;//ship moves n, e, s, w, or ne, se, sw, nw
 	unsigned int shipmoverange;//most tiles ship can traverse in one turn

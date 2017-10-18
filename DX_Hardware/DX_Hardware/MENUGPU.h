@@ -37,7 +37,7 @@ public:
 	void MENUGPU::DefineViewPort();
 	void MENUGPU::DefineAndCreateDepthStencil();
 
-	bool loadgame = false;
+	bool loadgame = false, shutdown = false;
 private:
 
 	void MENUGPU::Set();

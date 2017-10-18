@@ -3,6 +3,7 @@
 GAME::GAME(HWND &window)
 {
 	presentscene = MENUSCENE;
+	//presentscene = GAMESCENE;
 	teamcount = TWO;
 	presentteamturn = ONE;
 
@@ -44,34 +45,33 @@ void GAME::Run(XTime &T)
 		{
 		case ONE:
 		{
-			gamegpu->PlayerInput(gamegpu->teamone, ONE);
+			//make a catch for two player networked, loop waiting for other player to send data of there turn. 
+			gamegpu->PlayerInput(ONE);
 			gamegpu->CameraUpdate(T);
 			gamegpu->DrawToScreen();
 			SceneTransition();
-			TurnTransition();
+			TurnTransition();//send data over network after this function
 
 			break;//ONE break
 		}
 		case TWO:
 		{
-			gamegpu->PlayerInput(gamegpu->teamtwo, TWO);
+			//make a catch for two player networked, loop waiting for other player to send data of there turn. 
+			gamegpu->PlayerInput(TWO);
 			gamegpu->CameraUpdate(T);
 			gamegpu->DrawToScreen();
 			SceneTransition();
-			TurnTransition();
-
+			TurnTransition();//send data over network after this function 
+			
 			break;//TWO break
 		}
 		}
 		break;//GAMESCENE break
 	}
-	case LOADMENU:
+	case SHUTDOWN:
 	{
-
-	}
-	case LOADGAME:
-	{
-
+		PostQuitMessage(0);
+		break;
 	}
 	}
 
@@ -88,6 +88,11 @@ void GAME::SceneTransition()
 	{
 		presentscene = GAMESCENE;
 		menugpu->loadgame = false;
+	}
+	if (menugpu->shutdown)
+	{
+		presentscene = SHUTDOWN;
+		menugpu->shutdown = false;
 	}
 }
 

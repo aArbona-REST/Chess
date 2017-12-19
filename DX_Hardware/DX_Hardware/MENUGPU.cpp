@@ -370,8 +370,8 @@ void MENUGPU::ShutDown()
 	rtv->Release();
 	depthStencil->Release();
 	depthStencilView->Release();
-	Menuvertexshader->Release();
-	Menupixelshader->Release();
+	//Menuvertexshader->Release()//i dont know what is happening here);
+	//Menupixelshader->Release()//I though this was dynamically allocated and needed a delete or memclear of some kind;
 	layout->Release();
 	constBuffer->Release();
 }

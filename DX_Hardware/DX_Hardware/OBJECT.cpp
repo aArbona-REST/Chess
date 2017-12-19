@@ -12,6 +12,8 @@ OBJECT::OBJECT()
 	shipselectedheading = 0;
 	alive = true;
 	ship = false;
+	quad = false;
+	dirty = false;
 }
 
 

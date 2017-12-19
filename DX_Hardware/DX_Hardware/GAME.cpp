@@ -39,6 +39,14 @@ void GAME::Run(XTime &T)
 		SceneTransition();
 		break;//MENUSCENE break
 	}
+	case SERVERSETUPSCENE:
+	{
+		serverORclient = SERVER;
+	}
+	case CLIENTSETUPSCENE:
+	{
+		serverORclient = CLIENT;
+	}
 	case GAMESCENE:
 	{
 		switch (presentteamturn)//while in the game scene, team moves piece then ends its own turn begining the next teams turn
@@ -62,16 +70,34 @@ void GAME::Run(XTime &T)
 			gamegpu->DrawToScreen();
 			SceneTransition();
 			TurnTransition();//send data over network after this function 
-			
+
 			break;//TWO break
 		}
 		}
 		break;//GAMESCENE break
 	}
+	case NETWORKGAMESCENE:
+	{
+		switch (presentteamturn)
+		{
+		case ONE:
+		{
+			break;
+		}
+		case TWO:
+		{
+			break;
+		}
+		}
+	}
 	case SHUTDOWN:
 	{
 		PostQuitMessage(0);
 		break;
+	}
+	case NETWORKSHUTDOWN:
+	{
+
 	}
 	}
 

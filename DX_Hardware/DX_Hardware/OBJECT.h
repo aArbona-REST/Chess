@@ -8,7 +8,10 @@ public:
 	unsigned int positionindex[2];
 	bool alive;
 	bool ship;
+	bool quad;
+	bool dirty;// flag to update the mesh position to reflect the position index
 	//TODO: add variables to allow the game to know what movement the ship can have
+
 	enum SHIPMOVEHEADING { FORWARD = 1, ANGLE };
 	enum SHIPMOVERANGE { ZERO, ONE, TWO, THREE, FOUR, TEN = 10 };
 	enum HEADING { NONE, UP, UPRIGHT, RIGHT, DOWNRIGHT, DOWN, DOWNLEFT, LEFT, LEFTUP };

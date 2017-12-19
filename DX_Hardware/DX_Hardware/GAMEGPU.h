@@ -49,7 +49,32 @@ private:
 	float color[4]{ 0.2f, 0.2f, 0.5f, 0.0f };
 public:
 	HRESULT							HR;
+	bool returntomenu = false;
+	bool turnended = false;
+	OBJECT team[2][18];
+	ID3D11Device *device = NULL;//delete the new momory
+	ID3D11DeviceContext * context = NULL;//delete
+	IDXGISwapChain *swapchain = NULL;//delete
+	ID3D11RenderTargetView * rtv = NULL;//delete
+	D3D11_VIEWPORT viewport;//??delete??
+	ID3D11Texture2D * depthStencil = nullptr;//delete
+	ID3D11DepthStencilView * depthStencilView = nullptr;//delete
+	ID3D11InputLayout * layout = NULL;//delete
+	ID3D11Buffer * constBuffer = NULL;//delete
+	VRAM send_to_ram;
+	XMFLOAT4X4 camera;
 private:
+
+
+
+	//re organize the way textures are held in mem. 
+	//rather than each object have its texture
+	//make the obj have a pointer to the one copy of a texture ()
+	ID3D11ShaderResourceView * black = nullptr;
+	ID3D11ShaderResourceView * white = nullptr;
+	ID3D11ShaderResourceView * grey = nullptr;
+
+
 	size_t row = 14, depth = 8;
 
 	struct NODE
@@ -65,40 +90,16 @@ private:
 	};
 
 	NODE map[14][8];
-	OBJECT quadsmap[14][8];//this need to be synced for network play
+	OBJECT quadsmap[14][8];
 	OBJECT billboard;
 	int selectedobject = -1;
 	bool pieceselected = false;
-public:
-	bool returntomenu = false;
-	bool turnended = false;
-	OBJECT teamone[18];
-	OBJECT teamtwo[18];
-	int teamonecount = 18;//this need to be synced for network play
-	int teamtwocount = 18;//this need to be synced for network play
-	//OBJECT teamone[6];
-	//OBJECT teamtwo[6];
-	//int teamonecount = 6;
-	//int teamtwocount = 6;
-private:	
+
 	OBJECT selectedobjecticon;
-	//modifies to reduce player ships to test a full runthough quicker
 	unsigned int teamcapacity = 18;
 	unsigned int piececount = 18;
-	//unsigned int teamcapacity = 6;
-	//unsigned int piececount = 6;
 	D3D11_BUFFER_DESC bufferdescription;
 	D3D11_SUBRESOURCE_DATA InitData;
-
-public:
-	ID3D11Device *device = NULL;//delete
-	ID3D11DeviceContext * context = NULL;//delete
-	IDXGISwapChain *swapchain = NULL;//delete
-	ID3D11RenderTargetView * rtv = NULL;//delete
-	D3D11_VIEWPORT viewport;//??delete??
-	ID3D11Texture2D * depthStencil = nullptr;//delete
-	ID3D11DepthStencilView * depthStencilView = nullptr;//delete
-private:
 
 	ID3D11Buffer * groundvertbuffer = NULL;//delete
 	ID3D11Buffer * groundindexbuffer = NULL;//delete
@@ -107,13 +108,6 @@ private:
 	ID3D11VertexShader * Gamevertexshader = NULL;//delete
 	ID3D11PixelShader * Gamepixelshader = NULL;//delete
 
-
-public:
-	ID3D11InputLayout * layout = NULL;//delete
-	ID3D11Buffer * constBuffer = NULL;//delete
-	VRAM send_to_ram;
-	XMFLOAT4X4 camera;
-private:
 	UINT stride = sizeof(SIMPLE_VERTEX);
 	UINT offset = 0;
 	D3D11_MAPPED_SUBRESOURCE mapResource;

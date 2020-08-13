@@ -1,0 +1,24 @@
+Run from the IDE, Do not use compiled .exe.
+
+The game starts in the menu.
+
+W,A,S,D are used to translate the camera.
+Mouse left click & drag to rotate the camera.
+
+The pieces are color coated with black and white.
+The color of the tile determins the team the piece is on.
+
+The Sphere represents the highlighted piece.
+Use the num pad arrows to move the sphere to a piece.
+With Sphere on the same tile as piece you want to select press the enter key.
+Then press press a num pad arrow in the corresponding direction you want to move the piece. 
+The piece will automatically be deselected when the max number of moves is reached. 
+You can move less spaces than the max by pressing enter to deselect the piece. 
+By moving a piece its max range or moving a piece at least one space and deselecting the opposing teams turn is toggles. 
+
+The game is to be played by moving one black piece then move one white piece going back and forth.
+The game pieces are to over take the opposing teams pieces. Similar to Checkers or Chess.
+
+The win condition can be ether eliminating all oposing team pieces or one of the two pieces in the center of all the pieces.
+
+

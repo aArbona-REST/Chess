@@ -95,7 +95,7 @@ MENUGPU::MENUGPU(HWND &window)
 	};
 	InitalizeobjAsset(&newgame, (char*)"newgame_text.obj", (wchar_t*)L"white.dds", &menulistposition[NEWGAME]);
 	//
-	presenticonselected = EXIT;
+	presenticonselected = NEWGAME;
 	InitalizeobjAsset(&icon, (char*)"sphere.obj", (wchar_t*)L"black.dds", &menulistposition[presenticonselected]);
 
 }

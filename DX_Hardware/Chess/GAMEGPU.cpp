@@ -23,13 +23,15 @@ GAMEGPU::GAMEGPU(HWND &window)
 		1.0f, 0.0f, 0.0f, 0.0f,
 		0.0f, 1.0f, 0.0f, 0.0f,
 		0.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 25.0f, 0.0f, 1.0f
+		0.0f, 35.0f, 0.0f, 1.0f
 	};
+	XMMATRIX xrot = XMMatrixRotationX(45.0f);
+	m = xrot * m;
 	XMStoreFloat4x4(&camera, m);
 	XMStoreFloat4x4(&send_to_ram.camView, XMMatrixTranspose(XMLoadFloat4x4(&camera)));
 
 	float aspectRatio = (float)BACKBUFFER_WIDTH / (float)BACKBUFFER_HEIGHT;
-	float fovAngleY = 70.0f * XM_PI / 180.0f;
+	float fovAngleY = 70.4f * XM_PI / 180.0f;
 	if (aspectRatio < 1.0f)
 		fovAngleY *= 2.0f;
 	fovAngleY = XMConvertToDegrees(fovAngleY);
@@ -524,14 +526,14 @@ void GAMEGPU::CameraUpdate(XTime &Time)
 
 	XMMATRIX newcamera = XMLoadFloat4x4(&camera);
 
-	if (input.buttons['W'])
-		newcamera.r[3] = newcamera.r[3] + (newcamera.r[2] * +(float)Time.Delta() * 100.0f);
-	if (input.buttons['S'])
-		newcamera.r[3] = newcamera.r[3] + newcamera.r[2] * -(float)Time.Delta() * 100.0f;
-	if (input.buttons['A'])
-		newcamera.r[3] = newcamera.r[3] + newcamera.r[0] * -(float)Time.Delta() * 100.0f;
-	if (input.buttons['D'])
-		newcamera.r[3] = newcamera.r[3] + newcamera.r[0] * +(float)Time.Delta() * 100.0f;
+	//if (input.buttons['W'])
+	//	newcamera.r[3] = newcamera.r[3] + (newcamera.r[2] * +(float)Time.Delta() * 100.0f);
+	//if (input.buttons['S'])
+	//	newcamera.r[3] = newcamera.r[3] + newcamera.r[2] * -(float)Time.Delta() * 100.0f;
+	//if (input.buttons['A'])
+	//	newcamera.r[3] = newcamera.r[3] + newcamera.r[0] * -(float)Time.Delta() * 100.0f;
+	//if (input.buttons['D'])
+	//	newcamera.r[3] = newcamera.r[3] + newcamera.r[0] * +(float)Time.Delta() * 100.0f;
 	if (input.mouse_move)
 		if (input.left_click)
 		{
@@ -988,6 +990,7 @@ void GAMEGPU::InitalizeQuad(OBJECT * object, const wchar_t * texture)
 {
 	struct QUAD
 	{
+		float quadsize = 3.4f;
 		unsigned int vertcount = 4;
 		unsigned int indexcount = 6;
 		unsigned int groundPlaneindex[6]{ 0,1,3,1,2,3 };
@@ -997,10 +1000,10 @@ void GAMEGPU::InitalizeQuad(OBJECT * object, const wchar_t * texture)
 			//{ XMFLOAT4(1.0f, 0.0f, -1.0f, 1.0f) ,XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(1.0f, 1.0f) },
 			//{ XMFLOAT4(-1.0f, 0.0f, -1.0f, 1.0f) ,XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(1.0f, 0.0f) },
 			//{ XMFLOAT4(-1.0f, 0.0f, 1.0f, 1.0f) ,XMFLOAT4(0.0f, 1.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(0.0f, 0.0f) },
-			{ XMFLOAT4(3.0f, 0.0f, 3.0f, 1.0f) ,XMFLOAT4(0.0f, 3.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(0.0f, 1.0f) },
-			{ XMFLOAT4(3.0f, 0.0f, -3.0f, 1.0f) ,XMFLOAT4(0.0f, 3.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(1.0f, 1.0f) },
-			{ XMFLOAT4(-3.0f, 0.0f, -3.0f, 1.0f) ,XMFLOAT4(0.0f, 3.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(1.0f, 0.0f) },
-			{ XMFLOAT4(-3.0f, 0.0f, 3.0f, 1.0f) ,XMFLOAT4(0.0f, 3.0f, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(0.0f, 0.0f) },
+			{ XMFLOAT4(quadsize, 0.0f, quadsize, 1.0f) ,XMFLOAT4(0.0f, quadsize, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(0.0f, 1.0f) },
+			{ XMFLOAT4(quadsize, 0.0f, -quadsize, 1.0f) ,XMFLOAT4(0.0f, quadsize, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(1.0f, 1.0f) },
+			{ XMFLOAT4(-quadsize, 0.0f, -quadsize, 1.0f) ,XMFLOAT4(0.0f, quadsize, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(1.0f, 0.0f) },
+			{ XMFLOAT4(-quadsize, 0.0f, quadsize, 1.0f) ,XMFLOAT4(0.0f, quadsize, 0.0f, 0.0f) ,groundColor ,XMFLOAT2(0.0f, 0.0f) },
 		};
 	};
 	QUAD q;
